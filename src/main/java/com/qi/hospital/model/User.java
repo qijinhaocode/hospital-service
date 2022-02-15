@@ -3,7 +3,9 @@ package com.qi.hospital.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -16,13 +18,17 @@ import javax.persistence.Table;
 @Table(name = "t_user")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    @Column(name = "uid")
     private String id;
 
+    @Column(name = "username")
     private String userName;
 
     private String idNumber;
 
+    @Column(name = "phone")
     private String phoneNumber;
 
     private String password;

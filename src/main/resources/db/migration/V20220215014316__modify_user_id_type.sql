@@ -1,0 +1,1 @@
+ALTER  TABLE t_user MODIFY uid  VARCHAR(50) NOT NULL COMMENT '用户id';
