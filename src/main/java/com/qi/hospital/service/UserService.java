@@ -2,7 +2,8 @@ package com.qi.hospital.service;
 
 
 import com.qi.hospital.dto.user.UserRequest;
-import com.qi.hospital.exception.InvalidUserException;
+import com.qi.hospital.exception.BusinessException;
+import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.UserMapper;
 import com.qi.hospital.model.User;
 import com.qi.hospital.repository.UserRepository;
@@ -20,7 +21,7 @@ public class UserService {
   public void userRegister(UserRequest userRequest){
     Optional<User> user = userRepository.findByUserName(userRequest.getUserName());
     if (user.isPresent()){
-        throw new InvalidUserException("user exist, please change username!");
+        throw new BusinessException(CommonErrorCode.E_100101);
     }
     userRepository.save(userMapper.toUser(userRequest));
   }
