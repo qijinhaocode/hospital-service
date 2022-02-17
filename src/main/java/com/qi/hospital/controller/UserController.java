@@ -1,5 +1,6 @@
 package com.qi.hospital.controller;
 
+import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,15 @@ import javax.validation.Valid;
 public class UserController {
     private final UserService userService;
 
-    @PostMapping
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public void registerUser(@RequestBody @Valid UserRequest userRequest) {
         userService.userRegister(userRequest);
     }
 
+    @PostMapping("/login")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+        return userService.userLogin(userLoginRequest);
+    }
 }
