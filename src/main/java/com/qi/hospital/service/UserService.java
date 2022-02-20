@@ -25,7 +25,7 @@ public class UserService {
         if (user.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100101);
         }
-        if (user.get().equals(Constants.ADMIN_USERNAME)) {
+        if (userRequest.getUserName().equals(Constants.ADMIN_USERNAME)) {
             throw new BusinessException(CommonErrorCode.E_100102);
         }
         userRepository.save(userMapper.toUser(userRequest));
