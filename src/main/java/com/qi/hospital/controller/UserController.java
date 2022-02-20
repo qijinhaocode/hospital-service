@@ -22,7 +22,7 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 @RequestMapping( "/user")
 @Validated
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class UserController {
     private final UserService userService;
 
