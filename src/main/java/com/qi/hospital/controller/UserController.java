@@ -43,7 +43,8 @@ public class UserController {
     }
 
     @GetMapping
-    public List<UserResponse> getAAllUsers(){
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
 
