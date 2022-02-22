@@ -3,6 +3,8 @@ package com.qi.hospital.service;
 
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
+import com.qi.hospital.dto.user.UserResponse;
+import com.qi.hospital.dto.user.UserUpdateRequest;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.UserMapper;
@@ -12,6 +14,7 @@ import com.qi.hospital.util.Constants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -53,5 +56,13 @@ public class UserService {
     private boolean isMatchAdminUsernameAndPassword(UserLoginRequest userLoginRequest) {
         return userLoginRequest.getUserName().equals(Constants.ADMIN_USERNAME) &&
                 userLoginRequest.getPassword().equals((Constants.ADMIN_PASSWORD));
+    }
+
+    public void updateUser(UserUpdateRequest userUpdateRequest){
+
+    }
+
+    public List<UserResponse> getAllUsers() {
+        return userMapper.toResponses(userRepository.findAll());
     }
 }
