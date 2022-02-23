@@ -1,1 +1,0 @@
-ALTER TABLE t_user modify  COLUMN username  VARCHAR(20) NOT NULL COMMENT '姓名';

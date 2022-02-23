@@ -1,6 +1,7 @@
 package com.qi.hospital.controller;
 
 import com.qi.hospital.dto.user.AdminLoginRequest;
+import com.qi.hospital.dto.user.UserCriteria;
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
@@ -52,6 +53,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/query")
+    @ResponseStatus(HttpStatus.OK)
+    public List<UserResponse> getSpecificUsers(@RequestBody UserCriteria userCriteria){
+        return userService.getUsersByNameAndIdNumber(userCriteria);
     }
 
 }
