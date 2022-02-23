@@ -1,6 +1,7 @@
 package com.qi.hospital.service;
 
 
+import com.qi.hospital.dto.user.AdminLoginRequest;
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
@@ -35,31 +36,32 @@ public class UserService {
     }
 
     public boolean userLogin(UserLoginRequest userRequest) {
-        //judge is admin
-        if (isMatchAdminUsernameAndPassword(userRequest)){
-            return true;
-        }
         // judge is normal user
-        Optional<User> user = userRepository.findByUserName(userRequest.getUserName());
-        if(user.isPresent() && isMatchNormalUsernameAndPassword(userRequest, user.get())){
+        Optional<User> user = userRepository.findByPhoneNumber(userRequest.getPhoneNumber());
+        if(user.isPresent() && isMatchNormalPhoneNumberAndPassword(userRequest, user.get())){
             return true;
         }
         //username and password not match
         throw new BusinessException(CommonErrorCode.E_100103);
     }
 
-    private boolean isMatchNormalUsernameAndPassword(UserLoginRequest userLoginRequest, User user) {
-        return user.getUserName().equals(userLoginRequest.getUserName()) &&
+    public boolean adminLogin(AdminLoginRequest adminLoginRequest) {
+        //judge is admin
+        if (isMatchAdminUsernameAndPassword(adminLoginRequest)){
+            return true;
+        }
+
+        //username and password not match
+        throw new BusinessException(CommonErrorCode.E_100103);
+    }
+    private boolean isMatchNormalPhoneNumberAndPassword(UserLoginRequest userLoginRequest, User user) {
+        return user.getUserName().equals(userLoginRequest.getPhoneNumber()) &&
                 user.getPassword().equals((userLoginRequest.getPassword()));
     }
 
-    private boolean isMatchAdminUsernameAndPassword(UserLoginRequest userLoginRequest) {
-        return userLoginRequest.getUserName().equals(Constants.ADMIN_USERNAME) &&
-                userLoginRequest.getPassword().equals((Constants.ADMIN_PASSWORD));
-    }
-
-    public void updateUser(UserUpdateRequest userUpdateRequest){
-
+    private boolean isMatchAdminUsernameAndPassword(AdminLoginRequest adminLoginRequest) {
+        return adminLoginRequest.getUserName().equals(Constants.ADMIN_USERNAME) &&
+                adminLoginRequest.getPassword().equals((Constants.ADMIN_PASSWORD));
     }
 
     public List<UserResponse> getAllUsers() {

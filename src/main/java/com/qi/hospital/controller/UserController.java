@@ -1,5 +1,6 @@
 package com.qi.hospital.controller;
 
+import com.qi.hospital.dto.user.AdminLoginRequest;
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
@@ -11,7 +12,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -40,6 +40,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public boolean userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) {
         return userService.userLogin(userLoginRequest);
+    }
+
+    @PostMapping("/admin_login")
+    @ResponseStatus(HttpStatus.OK)
+    public boolean adminLogin(@RequestBody @Valid AdminLoginRequest adminLoginRequest) {
+        return userService.adminLogin(adminLoginRequest);
     }
 
     @GetMapping
