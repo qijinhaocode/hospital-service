@@ -40,8 +40,8 @@ public class SectionController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public void createSection(@RequestBody @Valid SectionRequest sectionRequest) {
-        sectionService.createSection(sectionRequest);
+    public Section createSection(@RequestBody @Valid SectionRequest sectionRequest) {
+        return sectionService.createSection(sectionRequest);
     }
 
     @DeleteMapping()
