@@ -71,11 +71,11 @@ public class UserService {
     }
 
     public List<UserResponse> getUsersByNameAndIdNumber(UserCriteria userCriteria) {
-        if (userCriteria.getUserName() == null && userCriteria.getIdNumber() == null) {
+        if (userCriteria.getUserName().isEmpty() && userCriteria.getIdNumber().isEmpty()) {
             return Collections.emptyList();
-        } else if (userCriteria.getUserName() == null) {
+        } else if (userCriteria.getUserName().isEmpty()) {
             return userMapper.toResponses(userRepository.findAllByIdNumber(userCriteria.getIdNumber()));
-        } else if (userCriteria.getIdNumber() == null) {
+        } else if (userCriteria.getIdNumber().isEmpty()) {
             return userMapper.toResponses(userRepository.findAllByUserName(userCriteria.getUserName()));
         } else
             return userMapper.toResponses(userRepository.findAllByUserNameAndIdNumber(userCriteria.getUserName(), userCriteria.getIdNumber()));
