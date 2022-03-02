@@ -1,4 +1,4 @@
-package com.qi.hospital.model;
+package com.qi.hospital.model.section;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

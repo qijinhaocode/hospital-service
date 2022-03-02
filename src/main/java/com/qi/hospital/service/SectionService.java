@@ -6,7 +6,7 @@ import com.qi.hospital.dto.section.SectionUpdateRequest;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.SectionMapper;
-import com.qi.hospital.model.Section;
+import com.qi.hospital.model.section.Section;
 import com.qi.hospital.repository.SectionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

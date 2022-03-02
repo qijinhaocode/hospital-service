@@ -1,9 +1,9 @@
 package com.qi.hospital.controller;
 
-import com.qi.hospital.dto.section.SectionRequest;
-import com.qi.hospital.dto.section.SectionUpdateRequest;
-import com.qi.hospital.model.section.Section;
-import com.qi.hospital.service.SectionService;
+import com.qi.hospital.dto.doctor.DoctorRequest;
+import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
+import com.qi.hospital.model.dcotor.Doctor;
+import com.qi.hospital.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,39 +26,33 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/section")
+@RequestMapping( "/doctor")
 @Validated
 @CrossOrigin(origins = "*")
-public class SectionController {
-    private final SectionService sectionService;
+public class DoctorController {
+    private final DoctorService doctorService;
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Section createSection(@RequestBody @Valid SectionRequest sectionRequest) {
-        return sectionService.createSection(sectionRequest);
+    public Doctor createDoctor(@RequestBody @Valid DoctorRequest doctorRequest) {
+        return doctorService.createDoctor(doctorRequest);
     }
 
     @DeleteMapping()
     @ResponseStatus(HttpStatus.OK)
-    public void deleteSection(@RequestParam(value = "name") String name) {
-        sectionService.deleteSection(name);
+    public void deleteSection(@RequestParam(value = "jobNumber") String jobNumber) {
+        doctorService.deleteDoctor(jobNumber);
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateSection(@RequestBody @Valid SectionUpdateRequest sectionUpdateRequest){
-        sectionService.updateSection(sectionUpdateRequest);
-    }
-
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    public List<Section> querySectionFuzzy(@RequestParam(value = "name") String name){
-       return sectionService.querySection(name);
+    public void updateSection(@RequestBody @Valid DoctorUpdateRequest doctorUpdateRequest){
+        doctorService.updateSection(doctorUpdateRequest);
     }
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<Section> getSections(){
-        return sectionService.getAllSection();
+    public List<Doctor> getAllDoctors(){
+        return doctorService.getAllDoctors();
     }
 }

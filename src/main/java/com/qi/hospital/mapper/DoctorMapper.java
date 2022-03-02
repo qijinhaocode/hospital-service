@@ -1,21 +1,19 @@
 package com.qi.hospital.mapper;
 
-import com.qi.hospital.dto.user.UserRequest;
-import com.qi.hospital.dto.user.UserResponse;
-import com.qi.hospital.model.user.User;
+import com.qi.hospital.dto.doctor.DoctorRequest;
+import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
+import com.qi.hospital.model.dcotor.Doctor;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE,builder = @Builder(disableBuilder = true))
-public interface UserMapper {
+public interface DoctorMapper {
 
-    User toUser(UserRequest userRequest);
+    Doctor toDoctor(DoctorRequest doctorRequest);
 
-    List<UserResponse> toResponses(List<User> users);
+    Doctor toDoctor(DoctorUpdateRequest doctorRequest);
 
 }
 

@@ -1,4 +1,4 @@
-package com.qi.hospital.model;
+package com.qi.hospital.model.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

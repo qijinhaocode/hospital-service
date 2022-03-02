@@ -9,7 +9,7 @@ import com.qi.hospital.dto.user.UserResponse;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.UserMapper;
-import com.qi.hospital.model.User;
+import com.qi.hospital.model.user.User;
 import com.qi.hospital.repository.UserRepository;
 import com.qi.hospital.util.Constants;
 import lombok.RequiredArgsConstructor;
