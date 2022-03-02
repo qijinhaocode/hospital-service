@@ -1,6 +1,7 @@
 package com.qi.hospital.service;
 
 
+import com.qi.hospital.dto.doctor.DoctorQueryCriteria;
 import com.qi.hospital.dto.doctor.DoctorRequest;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
@@ -12,11 +13,19 @@ import com.qi.hospital.model.section.Section;
 import com.qi.hospital.repository.DoctorRepository;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,6 +71,37 @@ public class DoctorService {
         List<Section> sections = sectionService.getAllSection();
         Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
         List<Doctor> doctors = doctorRepository.findAll();
+        return doctors.stream().map(doctor -> {
+            DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
+            doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));
+            return doctorResponse;
+        }).collect(Collectors.toList());
+    }
+
+    public List<DoctorResponse> getDoctorsByCondition(DoctorQueryCriteria doctorQueryCriteria) {
+        Specification<Doctor> specification = new Specification<Doctor>() {
+            @Override
+            public Predicate toPredicate(Root<Doctor> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
+                List<Predicate> predicates = new LinkedList<>();
+                if (doctorQueryCriteria.getName() != null) {
+                    predicates.add(cb.like(root.get("name"), "%" + doctorQueryCriteria.getName() + "%")); // 查询name
+                }
+                if (Objects.nonNull(doctorQueryCriteria.getTitle())) {
+                    predicates.add(cb.equal(root.get("title"), doctorQueryCriteria.getTitle())); // 查询title
+                }
+                if (doctorQueryCriteria.getJobNumber() != null) {
+                    predicates.add(cb.equal(root.get("jobNumber"), doctorQueryCriteria.getJobNumber())); // 查询工号
+                }
+                if (!doctorQueryCriteria.getSectionId().isBlank()) {
+                    predicates.add(cb.equal(root.get("sectionId"), doctorQueryCriteria.getSectionId())); // 查询科室
+                }
+
+                return query.where(predicates.toArray(new Predicate[0])).getRestriction();
+            }
+        };
+        List<Doctor> doctors = doctorRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "jobNumber"));
+        List<Section> sections = sectionService.getAllSection();
+        Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
         return doctors.stream().map(doctor -> {
             DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
             doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));

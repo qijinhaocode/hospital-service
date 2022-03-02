@@ -1,9 +1,12 @@
 package com.qi.hospital.controller;
 
+import com.qi.hospital.dto.doctor.DoctorQueryCriteria;
 import com.qi.hospital.dto.doctor.DoctorRequest;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
 import com.qi.hospital.model.dcotor.Doctor;
+import com.qi.hospital.model.dcotor.DoctorTitle;
+import com.qi.hospital.model.section.Section;
 import com.qi.hospital.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,5 +58,14 @@ public class DoctorController {
     @ResponseStatus(HttpStatus.OK)
     public List<DoctorResponse> getAllDoctors(){
         return doctorService.getAllDoctors();
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<DoctorResponse> getDoctorsByCondition(@RequestParam(value = "name", required = false) String name,
+                                                      @RequestParam(value = "jobNumber" ,required = false) String jobNumber,
+                                                      @RequestParam(value = "title" ,required = false) DoctorTitle title,
+                                                      @RequestParam(value = "sectionId" ,required = false) String sectionId){
+        return doctorService.getDoctorsByCondition(DoctorQueryCriteria.builder().name(name).sectionId(sectionId).title(title).jobNumber(jobNumber).build());
     }
 }
