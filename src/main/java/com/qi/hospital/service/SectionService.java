@@ -61,6 +61,4 @@ public class SectionService {
     public List<Section> getAllSection(){
         return sectionRepository.findAll();
     }
-
-
 }

@@ -1,6 +1,7 @@
 package com.qi.hospital.controller;
 
 import com.qi.hospital.dto.doctor.DoctorRequest;
+import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
 import com.qi.hospital.model.dcotor.Doctor;
 import com.qi.hospital.service.DoctorService;
@@ -52,7 +53,7 @@ public class DoctorController {
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<Doctor> getAllDoctors(){
+    public List<DoctorResponse> getAllDoctors(){
         return doctorService.getAllDoctors();
     }
 }
