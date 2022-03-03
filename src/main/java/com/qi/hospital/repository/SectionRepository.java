@@ -14,6 +14,8 @@ public interface SectionRepository extends JpaRepository<Section,String> {
 
   Optional<Section> findByName(String name);
 
+  Optional<Section> findById(String id);
+
   List<Section> findAll();
 
   void deleteByName(String name);

@@ -7,7 +7,7 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class SectionUpdateRequest {
     @NotBlank
-    private String originalName;
+    private String id;
     @NotBlank
-    private String newName;
+    private String name;
 }

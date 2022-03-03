@@ -41,16 +41,15 @@ public class SectionService {
 
     @Transactional
     public void updateSection(SectionUpdateRequest sectionUpdateRequest) {
-        Optional<Section> originSection = sectionRepository.findByName(sectionUpdateRequest.getOriginalName());
+        Optional<Section> originSection = sectionRepository.findById(sectionUpdateRequest.getId());
         if (!originSection.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100104);
         }
-        Optional<Section> section = sectionRepository.findByName(sectionUpdateRequest.getNewName());
-        if (section.isPresent()) {
-            throw new BusinessException(CommonErrorCode.E_100104);
+        Optional<Section> section = sectionRepository.findById(sectionUpdateRequest.getId());
+        if (section.get().getName().equals(sectionUpdateRequest.getName())) {
+            return; // 如果名称与原来一样，则直接返回不做保存处理。
         }
-        sectionRepository.deleteByName(sectionUpdateRequest.getOriginalName());
-        Section sectionNew = Section.builder().name(sectionUpdateRequest.getNewName()).build();
+        Section sectionNew = Section.builder().id(sectionUpdateRequest.getId()).name(sectionUpdateRequest.getName()).build();
         sectionRepository.save(sectionNew);
     }
 

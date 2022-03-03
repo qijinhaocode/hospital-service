@@ -13,6 +13,7 @@ import com.qi.hospital.model.section.Section;
 import com.qi.hospital.repository.DoctorRepository;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -83,16 +84,16 @@ public class DoctorService {
             @Override
             public Predicate toPredicate(Root<Doctor> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
                 List<Predicate> predicates = new LinkedList<>();
-                if (doctorQueryCriteria.getName() != null) {
+                if (StringUtils.isNotBlank(doctorQueryCriteria.getName())) {
                     predicates.add(cb.like(root.get("name"), "%" + doctorQueryCriteria.getName() + "%")); // 查询name
                 }
                 if (Objects.nonNull(doctorQueryCriteria.getTitle())) {
                     predicates.add(cb.equal(root.get("title"), doctorQueryCriteria.getTitle())); // 查询title
                 }
-                if (doctorQueryCriteria.getJobNumber() != null) {
+                if (StringUtils.isNotBlank(doctorQueryCriteria.getJobNumber())){
                     predicates.add(cb.equal(root.get("jobNumber"), doctorQueryCriteria.getJobNumber())); // 查询工号
                 }
-                if (!doctorQueryCriteria.getSectionId().isBlank()) {
+                if (StringUtils.isNotBlank(doctorQueryCriteria.getSectionId())) {
                     predicates.add(cb.equal(root.get("sectionId"), doctorQueryCriteria.getSectionId())); // 查询科室
                 }
 

@@ -64,7 +64,7 @@ public class DoctorController {
     @ResponseStatus(HttpStatus.OK)
     public List<DoctorResponse> getDoctorsByCondition(@RequestParam(value = "name", required = false) String name,
                                                       @RequestParam(value = "jobNumber" ,required = false) String jobNumber,
-                                                      @RequestParam(value = "title" ,required = false) DoctorTitle title,
+                                                      @RequestParam(value = "title" ,required = false)  DoctorTitle title,
                                                       @RequestParam(value = "sectionId" ,required = false) String sectionId){
         return doctorService.getDoctorsByCondition(DoctorQueryCriteria.builder().name(name).sectionId(sectionId).title(title).jobNumber(jobNumber).build());
     }
