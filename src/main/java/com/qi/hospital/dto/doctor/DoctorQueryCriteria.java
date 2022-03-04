@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @Builder
 public class DoctorQueryCriteria {
+    //医生查询
     private String name;
     private String jobNumber;
     private DoctorTitle title;
