@@ -1,0 +1,20 @@
+CREATE TABLE t_shift (
+                          uid VARCHAR(50)  COMMENT '排班id',
+                          doctor_job_number VARCHAR(20) NOT NULL UNIQUE COMMENT '医生工号',
+                          week_Monday_morning INTEGER (20) COMMENT '周一上午限约数',
+                          week_Monday_afternoon INTEGER (20) COMMENT '周一下午限约数',
+                          week_Tuesday_morning INTEGER (20) COMMENT '周二上午限约数',
+                          week_Tuesday_afternoon INTEGER (20) COMMENT '周二下午限约数',
+                          week_Wednesday_morning INTEGER (20) COMMENT '周三上午限约数',
+                          week_Wednesday_afternoon INTEGER (20) COMMENT '周三下午限约数',
+                          week_Thursday_morning INTEGER (20) COMMENT '周四上午限约数',
+                          week_Thursday_afternoon INTEGER (20) COMMENT '周四下午限约数',
+                          week_Friday_morning INTEGER (20) COMMENT '周五上午限约数',
+                          week_Friday_afternoon INTEGER (20) COMMENT '周五下午限约数',
+                          week_Saturday_morning INTEGER (20) COMMENT '周六上午限约数',
+                          week_Saturday_afternoon INTEGER (20) COMMENT '周六上下午限约数',
+                          week_Sunday_morning INTEGER (20) COMMENT '周日上午限约数',
+                          week_Sunday_afternoon INTEGER (20) COMMENT '周日下午限约数',
+                          PRIMARY KEY (uid),
+                          FOREIGN KEY (doctor_job_number) REFERENCES t_doctor (job_number) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
