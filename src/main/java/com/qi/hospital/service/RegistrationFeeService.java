@@ -34,7 +34,6 @@ public class RegistrationFeeService {
     }
 
     private Set<DoctorTitle> getAllRegistrationFeeDoctorTitle() {
-        initRegistrationFee();
         return registrationFeeRepository.findAll()
                 .stream()
                 .map(RegistrationFee::getDoctorTitle)
