@@ -49,6 +49,7 @@ public class RegistrationFeeService {
     }
 
     public List<RegistrationFee> getALlRegistrationFee(){
+        initRegistrationFee();
         return registrationFeeRepository.findAll();
     }
 
