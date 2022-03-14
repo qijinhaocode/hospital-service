@@ -6,7 +6,6 @@ import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
 import com.qi.hospital.model.dcotor.Doctor;
 import com.qi.hospital.model.dcotor.DoctorTitle;
-import com.qi.hospital.model.section.Section;
 import com.qi.hospital.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

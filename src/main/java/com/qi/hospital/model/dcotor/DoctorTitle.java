@@ -12,6 +12,5 @@ public enum DoctorTitle {
     CHIEF("主任医师"),
     ASSOCIATE_CHIEF("副主任医师"),
     ORDINARY("普通医师");
-
     private String description;
     }
