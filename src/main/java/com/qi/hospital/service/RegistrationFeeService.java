@@ -8,6 +8,7 @@ import com.qi.hospital.model.registrationFee.RegistrationFee;
 import com.qi.hospital.repository.RegistrationFeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -47,6 +48,7 @@ public class RegistrationFeeService {
                 .registrationFee(updateRegistrationFeeRequest.getRegistrationFee()).build());
     }
 
+    @Transactional
     public List<RegistrationFee> getALlRegistrationFee(){
         initRegistrationFee();
         return registrationFeeRepository.findAll();
