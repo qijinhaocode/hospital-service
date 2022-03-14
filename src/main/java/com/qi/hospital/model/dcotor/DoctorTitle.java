@@ -8,9 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public enum DoctorTitle {
-    EXPERT("专家医师"),
-    CHIEF("主任医师"),
-    ASSOCIATE_CHIEF("副主任医师"),
-    ORDINARY("普通医师");
+    EXPERT(0, "专家医师"),
+    CHIEF(1, "主任医师"),
+    ASSOCIATE_CHIEF(2, "副主任医师"),
+    ORDINARY(3, "普通医师");
+
+    private int sequence;
     private String description;
-    }
+}
