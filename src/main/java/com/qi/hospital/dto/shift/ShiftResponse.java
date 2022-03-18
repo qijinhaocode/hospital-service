@@ -8,7 +8,6 @@ import javax.validation.constraints.NotBlank;
 
 @Data
 public class ShiftResponse {
-    @NotBlank
     private String doctorJobNumber;
     private Integer weekMondayMorning;
     private Integer weekMondayAfternoon;

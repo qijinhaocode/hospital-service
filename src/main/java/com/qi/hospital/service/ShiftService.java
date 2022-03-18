@@ -2,37 +2,23 @@ package com.qi.hospital.service;
 
 
 import com.qi.hospital.dto.doctor.DoctorQueryCriteria;
-import com.qi.hospital.dto.doctor.DoctorRequest;
 import com.qi.hospital.dto.doctor.DoctorResponse;
-import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
 import com.qi.hospital.dto.shift.ShiftRequest;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftUpdateRequest;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
-import com.qi.hospital.mapper.DoctorMapper;
 import com.qi.hospital.mapper.ShiftMapper;
-import com.qi.hospital.model.dcotor.Doctor;
-import com.qi.hospital.model.section.Section;
 import com.qi.hospital.model.shift.Shift;
 import com.qi.hospital.repository.DoctorRepository;
 import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;

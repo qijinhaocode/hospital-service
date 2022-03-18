@@ -42,7 +42,7 @@ public class ShiftController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public Shift createDoctor(@RequestBody @Valid ShiftRequest shiftRequest) {
+    public Shift createShift(@RequestBody @Valid ShiftRequest shiftRequest) {
         return shiftService.createShift(shiftRequest);
     }
 
