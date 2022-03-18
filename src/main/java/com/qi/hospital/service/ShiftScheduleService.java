@@ -83,7 +83,7 @@ public class ShiftScheduleService {
             shift[0] = byDoctorJobNumber.get().getWeekMondayMorning();
             shift[1] = byDoctorJobNumber.get().getWeekMondayAfternoon();
         }
-        if (dayOfWeek.equals(DayOfWeek.THURSDAY)) {
+        if (dayOfWeek.equals(DayOfWeek.TUESDAY)) {
             shift[0] = byDoctorJobNumber.get().getWeekTuesdayMorning();
             shift[1] = byDoctorJobNumber.get().getWeekTuesdayAfternoon();
         }
