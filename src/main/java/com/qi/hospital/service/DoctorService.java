@@ -9,8 +9,11 @@ import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.DoctorMapper;
 import com.qi.hospital.model.dcotor.Doctor;
+import com.qi.hospital.model.dcotor.DoctorTitle;
+import com.qi.hospital.model.registrationFee.RegistrationFee;
 import com.qi.hospital.model.section.Section;
 import com.qi.hospital.repository.DoctorRepository;
+import com.qi.hospital.repository.RegistrationFeeRepository;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +40,7 @@ public class DoctorService {
     private final DoctorRepository doctorRepository;
     private final DoctorMapper doctorMapper;
     private final SectionService sectionService;
+    private final RegistrationFeeRepository registrationFeeRepository;
 
     public Doctor createDoctor(DoctorRequest doctorRequest) {
         Optional<Doctor> doctor = doctorRepository.findByJobNumber(doctorRequest.getJobNumber());
@@ -72,9 +76,14 @@ public class DoctorService {
         List<Section> sections = sectionService.getAllSection();
         Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
         List<Doctor> doctors = doctorRepository.findAll();
+        List<RegistrationFee> allRegistrationFee = registrationFeeRepository.findAll();
+        Map<DoctorTitle, RegistrationFee> doctorTitleRegistrationFeeMap = allRegistrationFee
+                .stream()
+                .collect(Collectors.toMap(RegistrationFee::getDoctorTitle, Function.identity()));
         return doctors.stream().map(doctor -> {
             DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
             doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));
+            doctorResponse.setRegistrationFee(doctorTitleRegistrationFeeMap.get(doctor.getTitle()).getRegistrationFee());
             return doctorResponse;
         }).collect(Collectors.toList());
     }
@@ -90,7 +99,7 @@ public class DoctorService {
                 if (Objects.nonNull(doctorQueryCriteria.getTitle())) {
                     predicates.add(cb.equal(root.get("title"), doctorQueryCriteria.getTitle())); // 查询title
                 }
-                if (StringUtils.isNotBlank(doctorQueryCriteria.getJobNumber())){
+                if (StringUtils.isNotBlank(doctorQueryCriteria.getJobNumber())) {
                     predicates.add(cb.equal(root.get("jobNumber"), doctorQueryCriteria.getJobNumber())); // 查询工号
                 }
                 if (StringUtils.isNotBlank(doctorQueryCriteria.getSectionId())) {
@@ -103,9 +112,15 @@ public class DoctorService {
         List<Doctor> doctors = doctorRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "jobNumber"));
         List<Section> sections = sectionService.getAllSection();
         Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
+        //get registration fee map
+        List<RegistrationFee> allRegistrationFee = registrationFeeRepository.findAll();
+        Map<DoctorTitle, RegistrationFee> doctorTitleRegistrationFeeMap = allRegistrationFee.stream().collect(Collectors.toMap(RegistrationFee::getDoctorTitle, Function.identity()));
+
         return doctors.stream().map(doctor -> {
             DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
             doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));
+            //todo Nullpointexception deal
+            doctorResponse.setRegistrationFee(doctorTitleRegistrationFeeMap.get(doctor.getTitle()).getRegistrationFee());
             return doctorResponse;
         }).collect(Collectors.toList());
     }

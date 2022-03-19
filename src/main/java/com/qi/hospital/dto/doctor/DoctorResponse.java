@@ -17,4 +17,5 @@ public class DoctorResponse {
     private DoctorTitle title;
     private String intro;
     private Section section;
+    private Double registrationFee;
 }
