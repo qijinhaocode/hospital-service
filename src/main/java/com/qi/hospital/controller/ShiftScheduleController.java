@@ -31,7 +31,7 @@ public class ShiftScheduleController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    public List<ShiftSchedule> createShiftSchedule(@RequestBody @Valid ShiftScheduleRequest shiftScheduleRequest) {
+    public List<ShiftScheduleResponse> createShiftSchedule(@RequestBody @Valid ShiftScheduleRequest shiftScheduleRequest) {
         return shiftScheduleService.createShiftSchedule(shiftScheduleRequest);
     }
 

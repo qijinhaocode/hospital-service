@@ -35,9 +35,8 @@ public class ShiftScheduleService {
     private final ShiftScheduleMapper shiftScheduleMapper;
 
     //create ShiftSchedule by start date and end date (generate)
-    public List<ShiftSchedule> createShiftSchedule(ShiftScheduleRequest shiftScheduleRequest) {
+    public List<ShiftScheduleResponse> createShiftSchedule(ShiftScheduleRequest shiftScheduleRequest) {
         //日期转星期，遍历这个日期之间所有，生成号表。
-        //遍历日期之间
         List<String> strings = DateOperationUtil.collectTimeFrame(shiftScheduleRequest.getStartDate(), shiftScheduleRequest.getEndDate());
         List<LocalDate> localDates = strings
                 .stream()
@@ -58,7 +57,13 @@ public class ShiftScheduleService {
                 shiftScheduleRepository.save(build);
             }
         }));
-        return shiftSchedules;
+        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        return shiftSchedules.stream().map(shiftSchedule -> {
+            ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+            shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+            return shiftScheduleResponse;
+        }).collect(Collectors.toList());
     }
 
     //返回所有号表信息
