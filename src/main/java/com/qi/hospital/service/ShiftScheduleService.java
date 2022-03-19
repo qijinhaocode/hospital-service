@@ -57,7 +57,9 @@ public class ShiftScheduleService {
                             .localDate(localDate)
                             .morning(morningAndAfternoonReservationNumberFromDate[0])
                             .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
-                    shiftSchedules.add(build);
+                    if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
+                        shiftSchedules.add(build);
+                    }
                     shiftScheduleRepository.save(build);
                 } else {
                     Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
@@ -66,6 +68,9 @@ public class ShiftScheduleService {
                             .localDate(localDate)
                             .morning(morningAndAfternoonReservationNumberFromDate[0])
                             .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
+                    if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
+                        shiftSchedules.add(build);
+                    }
                     shiftSchedules.add(build);
                     shiftScheduleRepository.save(build);
                 }
@@ -81,12 +86,18 @@ public class ShiftScheduleService {
         }).collect(Collectors.toList());
     }
 
+    private boolean isShiftScheduleVisible(Integer morning, Integer afternoon) {
+        return morning != null || afternoon != null;
+    }
+
     //返回所有号表信息
     public List<ShiftScheduleResponse> getAllShiftSchedule() {
         List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findAll();
-        return shiftSchedules.stream().map(shiftSchedule -> {
+        return shiftSchedules.stream()
+                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(),shiftSchedule.getAfternoon()))
+                .map(shiftSchedule -> {
             ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
             shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
             return shiftScheduleResponse;
@@ -107,7 +118,9 @@ public class ShiftScheduleService {
         List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
-        return shiftSchedules.stream().map(shiftSchedule -> {
+        return shiftSchedules.stream()
+                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(),shiftSchedule.getAfternoon()))
+                .map(shiftSchedule -> {
             ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
             shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
             return shiftScheduleResponse;
