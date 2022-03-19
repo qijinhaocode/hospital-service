@@ -2,7 +2,6 @@ package com.qi.hospital.controller;
 
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
-import com.qi.hospital.model.shift.ShiftSchedule;
 import com.qi.hospital.service.ShiftScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/shift_schedule")
+@RequestMapping("/shift_schedule")
 @Validated
 @CrossOrigin(origins = "*")
 public class ShiftScheduleController {
@@ -37,13 +37,15 @@ public class ShiftScheduleController {
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShiftScheduleResponse> getAllDoctorsShiftSchedules(){
+    public List<ShiftScheduleResponse> getAllDoctorsShiftSchedules() {
         return shiftScheduleService.getAllShiftSchedule();
     }
-//
-//    @GetMapping
-//    @ResponseStatus(HttpStatus.OK)
-//    public getShiftScheduleByCondition(){
 
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public List<ShiftScheduleResponse> getShiftScheduleByCondition(@RequestParam(value = "startDate") String startDate,
+                                                                   @RequestParam(value = "endDate") String endDate) {
+        return shiftScheduleService.getShiftScheduleByCondition(startDate, endDate);
+    }
 
 }

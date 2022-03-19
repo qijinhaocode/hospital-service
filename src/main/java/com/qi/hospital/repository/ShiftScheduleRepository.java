@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ShiftScheduleRepository extends JpaRepository<ShiftSchedule,String>, JpaSpecificationExecutor<ShiftSchedule> {
     Optional<ShiftSchedule> findByLocalDateAndDoctorJobNumber(LocalDate localDate, String jonNumber);
+
+    List<ShiftSchedule> findByLocalDateIn(List<LocalDate> localDates);
 }

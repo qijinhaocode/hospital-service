@@ -93,6 +93,27 @@ public class ShiftScheduleService {
         }).collect(Collectors.toList());
     }
 
+    //according to the start date and end date query
+    public List<ShiftScheduleResponse> getShiftScheduleByCondition(String startDate, String endDate) {
+        //查找所有日期
+        LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
+        LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
+        List<String> strings = DateOperationUtil.collectTimeFrame(startDateLocal, endDateLocal);
+        List<LocalDate> localDates = strings
+                .stream()
+                .map(string -> DateOperationUtil.String2LocalDate(string))
+                .collect(Collectors.toList());
+
+        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
+        return shiftSchedules.stream().map(shiftSchedule -> {
+            ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+            shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+            return shiftScheduleResponse;
+        }).collect(Collectors.toList());
+    }
+
     // from date to get Morning and Afternoon
     private Integer[] getMorningAndAfternoonReservationNumberFromDate(LocalDate localDate, String jobNumber) {
         Integer[] shift = new Integer[2];
