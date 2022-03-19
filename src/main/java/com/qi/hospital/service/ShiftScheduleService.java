@@ -47,14 +47,16 @@ public class ShiftScheduleService {
         //get all ShiftSchedule
         List<ShiftResponse> allDoctorsShifts = shiftService.getAllDoctorsShifts();
         allDoctorsShifts.forEach(doctorsShift -> localDates.forEach(localDate -> {
-            Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
-            ShiftSchedule build = ShiftSchedule.builder().doctorJobNumber(doctorsShift
-                    .getDoctorJobNumber())
-                    .localDate(localDate)
-                    .morning(morningAndAfternoonReservationNumberFromDate[0])
-                    .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
-            shiftSchedules.add(build);
-            shiftScheduleRepository.save(build);
+            if (localDate.isAfter(LocalDate.now())) {
+                Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                ShiftSchedule build = ShiftSchedule.builder()
+                        .doctorJobNumber(doctorsShift.getDoctorJobNumber())
+                        .localDate(localDate)
+                        .morning(morningAndAfternoonReservationNumberFromDate[0])
+                        .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
+                shiftSchedules.add(build);
+                shiftScheduleRepository.save(build);
+            }
         }));
         return shiftSchedules;
     }
