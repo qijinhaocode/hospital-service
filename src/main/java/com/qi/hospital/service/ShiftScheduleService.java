@@ -43,20 +43,35 @@ public class ShiftScheduleService {
                 .map(string -> DateOperationUtil.String2LocalDate(string))
                 .collect(Collectors.toList());
         List<ShiftSchedule> shiftSchedules = new LinkedList<>();
+
         //get all ShiftSchedule
         List<ShiftResponse> allDoctorsShifts = shiftService.getAllDoctorsShifts();
         allDoctorsShifts.forEach(doctorsShift -> localDates.forEach(localDate -> {
             if (localDate.isAfter(LocalDate.now())) {
-                Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
-                ShiftSchedule build = ShiftSchedule.builder()
-                        .doctorJobNumber(doctorsShift.getDoctorJobNumber())
-                        .localDate(localDate)
-                        .morning(morningAndAfternoonReservationNumberFromDate[0])
-                        .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
-                shiftSchedules.add(build);
-                shiftScheduleRepository.save(build);
+                Optional<ShiftSchedule> byLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(localDate, doctorsShift.getDoctorJobNumber());
+                if (byLocalDateAndDoctorJobNumber.isPresent()) {
+                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                    ShiftSchedule build = ShiftSchedule.builder()
+                            .id(byLocalDateAndDoctorJobNumber.get().getId())
+                            .doctorJobNumber(doctorsShift.getDoctorJobNumber())
+                            .localDate(localDate)
+                            .morning(morningAndAfternoonReservationNumberFromDate[0])
+                            .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
+                    shiftSchedules.add(build);
+                    shiftScheduleRepository.save(build);
+                } else {
+                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                    ShiftSchedule build = ShiftSchedule.builder()
+                            .doctorJobNumber(doctorsShift.getDoctorJobNumber())
+                            .localDate(localDate)
+                            .morning(morningAndAfternoonReservationNumberFromDate[0])
+                            .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
+                    shiftSchedules.add(build);
+                    shiftScheduleRepository.save(build);
+                }
             }
         }));
+
         List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         return shiftSchedules.stream().map(shiftSchedule -> {

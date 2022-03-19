@@ -40,4 +40,10 @@ public class ShiftScheduleController {
     public List<ShiftScheduleResponse> getAllDoctorsShiftSchedules(){
         return shiftScheduleService.getAllShiftSchedule();
     }
+//
+//    @GetMapping
+//    @ResponseStatus(HttpStatus.OK)
+//    public getShiftScheduleByCondition(){
+
+
 }
