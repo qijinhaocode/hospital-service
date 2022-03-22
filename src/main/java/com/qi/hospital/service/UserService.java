@@ -36,11 +36,11 @@ public class UserService {
         userRepository.save(userMapper.toUser(userRequest));
     }
 
-    public boolean userLogin(UserLoginRequest userRequest) {
+    public UserResponse userLogin(UserLoginRequest userRequest) {
         // judge is normal user
         Optional<User> user = userRepository.findByPhoneNumber(userRequest.getPhoneNumber());
         if (user.isPresent() && isMatchNormalPhoneNumberAndPassword(userRequest, user.get())) {
-            return true;
+            return userMapper.toResponse(user.get());
         }
         //username and password not match
         throw new BusinessException(CommonErrorCode.E_100103);

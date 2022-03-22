@@ -41,7 +41,7 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public boolean userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+    public UserResponse userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) {
         return userService.userLogin(userLoginRequest);
     }
 
