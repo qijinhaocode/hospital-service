@@ -36,14 +36,12 @@ public class UserService {
         userRepository.save(userMapper.toUser(userRequest));
     }
 
-    public boolean userLogin(UserLoginRequest userRequest,String token) {
+    public boolean userLogin(UserLoginRequest userRequest) {
         // judge is normal user
         Optional<User> user = userRepository.findByPhoneNumber(userRequest.getPhoneNumber());
         if (user.isPresent() && isMatchNormalPhoneNumberAndPassword(userRequest, user.get())) {
             return true;
         }
-        if (token.equals(userRequest.getPhoneNumber()))
-            return true;
         //username and password not match
         throw new BusinessException(CommonErrorCode.E_100103);
     }
@@ -83,4 +81,11 @@ public class UserService {
             return userMapper.toResponses(userRepository.findAllByUserNameAndIdNumber(userCriteria.getUserName(), userCriteria.getIdNumber()));
     }
 
+    public UserResponse getUserInfo(String token) {
+        Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+        if (!userOptional.isPresent()) {
+            throw new BusinessException(CommonErrorCode.E_100103);
+        }
+        return userMapper.toResponse(userOptional.get());
+    }
 }

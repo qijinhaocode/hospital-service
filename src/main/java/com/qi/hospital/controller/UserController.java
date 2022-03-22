@@ -41,8 +41,8 @@ public class UserController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public boolean userLogin(@RequestHeader("token") String token, @RequestBody @Valid UserLoginRequest userLoginRequest) {
-        return userService.userLogin(userLoginRequest, token);
+    public boolean userLogin(@RequestBody @Valid UserLoginRequest userLoginRequest) {
+        return userService.userLogin(userLoginRequest);
     }
 
     @PostMapping("/admin_login")
@@ -55,6 +55,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @GetMapping("/info")
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse getUserInfo(@RequestHeader("token") String token) {
+        return userService.getUserInfo(token);
     }
 
     @GetMapping("/query")
