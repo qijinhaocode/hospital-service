@@ -57,7 +57,7 @@ public class UserService {
     }
 
     private boolean isMatchNormalPhoneNumberAndPassword(UserLoginRequest userLoginRequest, User user) {
-        return user.getUserName().equals(userLoginRequest.getPhoneNumber()) &&
+        return user.getPhoneNumber().equals(userLoginRequest.getPhoneNumber()) &&
                 user.getPassword().equals((userLoginRequest.getPassword()));
     }
 
