@@ -22,7 +22,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/registration_fee")
+@RequestMapping("/registration_fee")
 @Validated
 @CrossOrigin(origins = "*")
 public class RegistrationFeeController {
@@ -30,19 +30,19 @@ public class RegistrationFeeController {
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<RegistrationFee> getRegistrationFee(){
+    public List<RegistrationFee> getRegistrationFee() {
         return registrationFeeService.getALlRegistrationFee();
     }
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateRegistrationFee(@RequestBody @Valid RegistrationFeeUpdateRequest registrationFeeUpdateRequest){
+    public void updateRegistrationFee(@RequestBody @Valid RegistrationFeeUpdateRequest registrationFeeUpdateRequest) {
         registrationFeeService.updateRegistrationFee(registrationFeeUpdateRequest);
     }
 
     @PostMapping(value = "init_registration_fee")
     @ResponseStatus(HttpStatus.OK)
-    public void initRegistrationFee(){
+    public void initRegistrationFee() {
         registrationFeeService.initRegistrationFee();
     }
 }

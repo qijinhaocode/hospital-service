@@ -34,7 +34,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/shift")
+@RequestMapping("/shift")
 @Validated
 @CrossOrigin(origins = "*")
 public class ShiftController {
@@ -54,22 +54,22 @@ public class ShiftController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateShift(@RequestBody @Valid ShiftUpdateRequest shiftUpdateRequest){
+    public void updateShift(@RequestBody @Valid ShiftUpdateRequest shiftUpdateRequest) {
         shiftService.updateShift(shiftUpdateRequest);
     }
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<ShiftResponse> getAllDoctorsShifts(){
+    public List<ShiftResponse> getAllDoctorsShifts() {
         return shiftService.getAllDoctorsShifts();
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ShiftResponse> getDoctorsByCondition(@RequestParam(value = "name", required = false) String name,
-                                                      @RequestParam(value = "jobNumber" ,required = false) String jobNumber,
-                                                      @RequestParam(value = "title" ,required = false)  DoctorTitle title,
-                                                      @RequestParam(value = "sectionId" ,required = false) String sectionId){
+                                                     @RequestParam(value = "jobNumber", required = false) String jobNumber,
+                                                     @RequestParam(value = "title", required = false) DoctorTitle title,
+                                                     @RequestParam(value = "sectionId", required = false) String sectionId) {
         return shiftService.getShiftsByCondition(DoctorQueryCriteria.builder().name(name).sectionId(sectionId).title(title).jobNumber(jobNumber).build());
     }
 }

@@ -26,7 +26,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/section")
+@RequestMapping("/section")
 @Validated
 @CrossOrigin(origins = "*")
 public class SectionController {
@@ -46,19 +46,19 @@ public class SectionController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateSection(@RequestBody @Valid SectionUpdateRequest sectionUpdateRequest){
+    public void updateSection(@RequestBody @Valid SectionUpdateRequest sectionUpdateRequest) {
         sectionService.updateSection(sectionUpdateRequest);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<Section> querySectionFuzzy(@RequestParam(value = "name") String name){
-       return sectionService.querySection(name);
+    public List<Section> querySectionFuzzy(@RequestParam(value = "name") String name) {
+        return sectionService.querySection(name);
     }
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<Section> getSections(){
+    public List<Section> getSections() {
         return sectionService.getAllSection();
     }
 }

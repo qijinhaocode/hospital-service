@@ -29,7 +29,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping( "/doctor")
+@RequestMapping("/doctor")
 @Validated
 @CrossOrigin(origins = "*")
 public class DoctorController {
@@ -49,22 +49,22 @@ public class DoctorController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateSection(@RequestBody @Valid DoctorUpdateRequest doctorUpdateRequest){
+    public void updateSection(@RequestBody @Valid DoctorUpdateRequest doctorUpdateRequest) {
         doctorService.updateSection(doctorUpdateRequest);
     }
 
     @GetMapping("all")
     @ResponseStatus(HttpStatus.OK)
-    public List<DoctorResponse> getAllDoctors(){
+    public List<DoctorResponse> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<DoctorResponse> getDoctorsByCondition(@RequestParam(value = "name", required = false) String name,
-                                                      @RequestParam(value = "jobNumber" ,required = false) String jobNumber,
-                                                      @RequestParam(value = "title" ,required = false)  DoctorTitle title,
-                                                      @RequestParam(value = "sectionId" ,required = false) String sectionId){
+                                                      @RequestParam(value = "jobNumber", required = false) String jobNumber,
+                                                      @RequestParam(value = "title", required = false) DoctorTitle title,
+                                                      @RequestParam(value = "sectionId", required = false) String sectionId) {
         return doctorService.getDoctorsByCondition(DoctorQueryCriteria.builder().name(name).sectionId(sectionId).title(title).jobNumber(jobNumber).build());
     }
 }
