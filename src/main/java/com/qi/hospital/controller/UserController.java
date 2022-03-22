@@ -42,7 +42,7 @@ public class UserController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public boolean userLogin(@RequestHeader("token") String token, @RequestBody @Valid UserLoginRequest userLoginRequest) {
-        return userService.userLogin(userLoginRequest,token);
+        return userService.userLogin(userLoginRequest, token);
     }
 
     @PostMapping("/admin_login")

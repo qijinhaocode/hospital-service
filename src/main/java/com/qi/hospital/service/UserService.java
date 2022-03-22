@@ -42,7 +42,7 @@ public class UserService {
         if (user.isPresent() && isMatchNormalPhoneNumberAndPassword(userRequest, user.get())) {
             return true;
         }
-        if (token.equals("10"))
+        if (token.equals(userRequest.getPhoneNumber()))
             return true;
         //username and password not match
         throw new BusinessException(CommonErrorCode.E_100103);
