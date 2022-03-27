@@ -15,6 +15,7 @@ import com.qi.hospital.repository.UserRepository;
 import com.qi.hospital.util.Constants;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -98,11 +99,22 @@ public class UserService {
     public UserResponse updateUserInfo(String token, UserUpdateRequest userUpdateRequest) {
         //find user in db
         Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+
         //judge user is exist
         validateUserExist(userOptional);
-        //
-        User userSrcRequest = userMapper.toUser(userUpdateRequest);
         User userOriginInDB = userOptional.get();
+        //change password
+        if (StringUtils.isNotBlank(userUpdateRequest.getOriginPassword()) && StringUtils.isNotBlank(userUpdateRequest.getNewPassword())) {
+            // 判断密码是否正确
+            if (userOriginInDB.getPassword().equals(userUpdateRequest.getOriginPassword())) {
+                User userSrcRequest = userMapper.toUser(userUpdateRequest);
+                JpaUtil.copyNotNullProperties(userSrcRequest, userOptional.get());
+                User userSaveInDB = userRepository.save(userOriginInDB);
+                return userMapper.toResponse(userSaveInDB);
+            }
+            throw new BusinessException(CommonErrorCode.E_100116);
+        }
+        User userSrcRequest = userMapper.toUser(userUpdateRequest);
         JpaUtil.copyNotNullProperties(userSrcRequest, userOptional.get());
         User userSaveInDB = userRepository.save(userOriginInDB);
         return userMapper.toResponse(userSaveInDB);

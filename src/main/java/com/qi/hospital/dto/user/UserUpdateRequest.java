@@ -10,7 +10,9 @@ public class UserUpdateRequest {
 
     private String phoneNumber;
 
-    private String password;
+    private String originPassword;
+
+    private String newPassword;
 
     private Integer gender;
 

@@ -6,6 +6,7 @@ import com.qi.hospital.dto.user.UserUpdateRequest;
 import com.qi.hospital.model.user.User;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface UserMapper {
 
     User toUser(UserRequest userRequest);
 
+    @Mapping(source = "newPassword", target = "password")
     User toUser(UserUpdateRequest userUpdateRequest);
 
     List<UserResponse> toResponses(List<User> users);
