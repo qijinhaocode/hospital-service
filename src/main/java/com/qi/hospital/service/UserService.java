@@ -6,12 +6,14 @@ import com.qi.hospital.dto.user.UserCriteria;
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
+import com.qi.hospital.dto.user.UserUpdateRequest;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.UserMapper;
 import com.qi.hospital.model.user.User;
 import com.qi.hospital.repository.UserRepository;
 import com.qi.hospital.util.Constants;
+import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -83,9 +85,26 @@ public class UserService {
 
     public UserResponse getUserInfo(String token) {
         Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+        validateUserExist(userOptional);
+        return userMapper.toResponse(userOptional.get());
+    }
+
+    private void validateUserExist(Optional<User> userOptional) {
         if (!userOptional.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100103);
         }
-        return userMapper.toResponse(userOptional.get());
+    }
+
+    public UserResponse updateUserInfo(String token, UserUpdateRequest userUpdateRequest) {
+        //find user in db
+        Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+        //judge user is exist
+        validateUserExist(userOptional);
+        //
+        User userSrcRequest = userMapper.toUser(userUpdateRequest);
+        User userOriginInDB = userOptional.get();
+        JpaUtil.copyNotNullProperties(userSrcRequest, userOptional.get());
+        User userSaveInDB = userRepository.save(userOriginInDB);
+        return userMapper.toResponse(userSaveInDB);
     }
 }

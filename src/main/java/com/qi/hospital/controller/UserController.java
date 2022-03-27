@@ -5,6 +5,7 @@ import com.qi.hospital.dto.user.UserCriteria;
 import com.qi.hospital.dto.user.UserLoginRequest;
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
+import com.qi.hospital.dto.user.UserUpdateRequest;
 import com.qi.hospital.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
@@ -69,6 +70,12 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponse> getSpecificUsers(@RequestParam(value = "userName", required = false) String userName, @RequestParam(value = "idNumber", required = false) String idNumber) {
         return userService.getUsersByNameAndIdNumber(UserCriteria.builder().userName(userName).idNumber(idNumber).build());
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public UserResponse updateUserInfo(@NotBlank @RequestHeader("token") String token, @RequestBody UserUpdateRequest userUpdateRequest) {
+        return userService.updateUserInfo(token, userUpdateRequest);
     }
 
 }

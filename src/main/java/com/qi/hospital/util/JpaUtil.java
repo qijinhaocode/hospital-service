@@ -10,8 +10,8 @@ import java.util.Set;
 
 
 public class JpaUtil {
-    public static void copyNotNullProperties(Object src,Object target){
-        BeanUtils.copyProperties(src,target,getNullPropertyNames(src));
+    public static void copyNotNullProperties(Object srcRequest,Object targetOriginDB){
+        BeanUtils.copyProperties(srcRequest,targetOriginDB,getNullPropertyNames(srcRequest));
     }
 
     public static String[] getNullPropertyNames (Object source) {

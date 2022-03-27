@@ -2,6 +2,7 @@ package com.qi.hospital.mapper;
 
 import com.qi.hospital.dto.user.UserRequest;
 import com.qi.hospital.dto.user.UserResponse;
+import com.qi.hospital.dto.user.UserUpdateRequest;
 import com.qi.hospital.model.user.User;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
@@ -15,9 +16,13 @@ public interface UserMapper {
 
     User toUser(UserRequest userRequest);
 
+    User toUser(UserUpdateRequest userUpdateRequest);
+
     List<UserResponse> toResponses(List<User> users);
 
     UserResponse toResponse(User user);
+
+
 
 }
 
