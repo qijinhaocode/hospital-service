@@ -96,16 +96,16 @@ public class ShiftScheduleService {
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findAll();
         return shiftSchedules.stream()
-                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(),shiftSchedule.getAfternoon()))
+                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
                 .map(shiftSchedule -> {
-            ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
-            shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
-            return shiftScheduleResponse;
-        }).collect(Collectors.toList());
+                    ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+                    shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+                    return shiftScheduleResponse;
+                }).collect(Collectors.toList());
     }
 
     //according to the start date and end date query
-    public List<ShiftScheduleResponse> getShiftScheduleByCondition(String startDate, String endDate) {
+    public List<ShiftScheduleResponse> getShiftScheduleByCondition(String startDate, String endDate, String sectionId) {
         //查找所有日期
         LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
         LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
@@ -118,13 +118,26 @@ public class ShiftScheduleService {
         List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
-        return shiftSchedules.stream()
-                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(),shiftSchedule.getAfternoon()))
-                .map(shiftSchedule -> {
-            ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
-            shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
-            return shiftScheduleResponse;
-        }).collect(Collectors.toList());
+        List<ShiftScheduleResponse> collect = new LinkedList<>();
+        if (sectionId != null) {
+            collect = shiftSchedules.stream()
+                    .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
+                    .filter(shiftSchedule -> doctorResponseGroupByJobNumber.get(shiftSchedule.getDoctorJobNumber()).getSection().getId().equals(sectionId))
+                    .map(shiftSchedule -> {
+                        ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+                        shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+                        return shiftScheduleResponse;
+                    }).collect(Collectors.toList());
+        } else {
+            collect = shiftSchedules.stream()
+                    .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
+                    .map(shiftSchedule -> {
+                        ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+                        shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+                        return shiftScheduleResponse;
+                    }).collect(Collectors.toList());
+        }
+        return collect;
     }
 
     // from date to get Morning and Afternoon

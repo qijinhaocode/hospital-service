@@ -44,8 +44,9 @@ public class ShiftScheduleController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<ShiftScheduleResponse> getShiftScheduleByCondition(@RequestParam(value = "startDate") String startDate,
-                                                                   @RequestParam(value = "endDate") String endDate) {
-        return shiftScheduleService.getShiftScheduleByCondition(startDate, endDate);
+                                                                   @RequestParam(value = "endDate") String endDate,
+                                                                   @RequestParam(value = "sectionId", required = false) String sectionId) {
+        return shiftScheduleService.getShiftScheduleByCondition(startDate, endDate, sectionId);
     }
 
 }
