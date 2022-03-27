@@ -14,7 +14,5 @@ public class UserUpdateRequest {
 
     private String newPassword;
 
-    private Integer gender;
-
     private String address;
 }

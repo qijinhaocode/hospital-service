@@ -18,6 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -96,9 +99,31 @@ public class UserService {
         }
     }
 
-    public UserResponse updateUserInfo(String token, UserUpdateRequest userUpdateRequest) {
+    public UserResponse updateUserInfo(String token, UserUpdateRequest userUpdateRequest) throws NoSuchMethodException {
         //find user in db
         Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+
+        //如果不为null， trim之后也不为空字符串或者回车，就可以。
+        Field[] fields = userUpdateRequest.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            String key = field.getName();// 获取属性名
+            String method = key.substring(0, 1).toUpperCase() + key.substring(1);// 将属性首字符大写，方便get & set 方法
+            Method setmethod = userUpdateRequest.getClass().getMethod("get" + method);// 获取 get 方法
+            String value = null;
+            try {
+                //todo 判断类型为String， 通过反射
+                value = (String) setmethod.invoke(userUpdateRequest);// 通过 get 获取值
+                //判断字符串
+                if (value != null && value.trim().length() == 0) {
+                    throw new BusinessException("字段" + key + " trim之后也不为空字符串");
+                }
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
 
         //judge user is exist
         validateUserExist(userOptional);

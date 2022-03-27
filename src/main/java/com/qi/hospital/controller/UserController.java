@@ -74,7 +74,7 @@ public class UserController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public UserResponse updateUserInfo(@NotBlank @RequestHeader("token") String token, @RequestBody UserUpdateRequest userUpdateRequest) {
+    public UserResponse updateUserInfo(@NotBlank @RequestHeader("token") String token, @RequestBody @Valid UserUpdateRequest userUpdateRequest) throws NoSuchMethodException {
         return userService.updateUserInfo(token, userUpdateRequest);
     }
 
