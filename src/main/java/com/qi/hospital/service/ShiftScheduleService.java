@@ -120,7 +120,7 @@ public class ShiftScheduleService {
 
         List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
-        List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
+        List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDates);
         List<ShiftScheduleResponse> collect = new LinkedList<>();
         if (sectionId != null) {
             collect = shiftSchedules.stream()
@@ -160,7 +160,7 @@ public class ShiftScheduleService {
 
                     List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
                     Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
-                    List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
+                    List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDates);
                     List<ShiftScheduleResponse> collect = new LinkedList<>();
                     if (sectionId != null) {
                         collect = shiftSchedules.stream()

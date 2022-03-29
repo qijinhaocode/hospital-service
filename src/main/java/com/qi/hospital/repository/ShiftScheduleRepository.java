@@ -13,5 +13,5 @@ import java.util.Optional;
 public interface ShiftScheduleRepository extends JpaRepository<ShiftSchedule,String>, JpaSpecificationExecutor<ShiftSchedule> {
     Optional<ShiftSchedule> findByLocalDateAndDoctorJobNumber(LocalDate localDate, String jonNumber);
 
-    List<ShiftSchedule> findByLocalDateIn(List<LocalDate> localDates);
+    List<ShiftSchedule> findByLocalDateInOrderByLocalDate(List<LocalDate> localDates);
 }
