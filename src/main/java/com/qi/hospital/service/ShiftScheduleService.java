@@ -7,8 +7,10 @@ import com.qi.hospital.dto.shift.ShiftScheduleResponse;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.ShiftScheduleMapper;
+import com.qi.hospital.model.section.Section;
 import com.qi.hospital.model.shift.Shift;
 import com.qi.hospital.model.shift.ShiftSchedule;
+import com.qi.hospital.repository.SectionRepository;
 import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.repository.ShiftScheduleRepository;
 import com.qi.hospital.util.DateOperationUtil;
@@ -33,6 +35,7 @@ public class ShiftScheduleService {
     private final ShiftScheduleRepository shiftScheduleRepository;
     private final DoctorService doctorService;
     private final ShiftScheduleMapper shiftScheduleMapper;
+    private final SectionRepository sectionRepository;
 
     //create ShiftSchedule by start date and end date (generate)
     public List<ShiftScheduleResponse> createShiftSchedule(ShiftScheduleRequest shiftScheduleRequest) {
@@ -138,6 +141,51 @@ public class ShiftScheduleService {
                     }).collect(Collectors.toList());
         }
         return collect;
+    }
+
+    public List<List<ShiftScheduleResponse>> getShiftScheduleByConditionGroupBySectionId(String startDate, String endDate) {
+        //查找所有日期
+        List<List<ShiftScheduleResponse>> resultList = new LinkedList<>();
+        List<Section> allSection = sectionRepository.findAll();
+        allSection.forEach(
+                section -> {
+                    String sectionId = section.getId();
+                    LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
+                    LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
+                    List<String> strings = DateOperationUtil.collectTimeFrame(startDateLocal, endDateLocal);
+                    List<LocalDate> localDates = strings
+                            .stream()
+                            .map(string -> DateOperationUtil.String2LocalDate(string))
+                            .collect(Collectors.toList());
+
+                    List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
+                    Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+                    List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateIn(localDates);
+                    List<ShiftScheduleResponse> collect = new LinkedList<>();
+                    if (sectionId != null) {
+                        collect = shiftSchedules.stream()
+                                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
+                                .filter(shiftSchedule -> doctorResponseGroupByJobNumber.get(shiftSchedule.getDoctorJobNumber()).getSection().getId().equals(sectionId))
+                                .map(shiftSchedule -> {
+                                    ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+                                    shiftScheduleResponse.setSection(section);
+                                    shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+                                    return shiftScheduleResponse;
+                                }).collect(Collectors.toList());
+                    } else {
+                        collect = shiftSchedules.stream()
+                                .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
+                                .map(shiftSchedule -> {
+                                    ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
+                                    shiftScheduleResponse.setSection(section);
+                                    shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
+                                    return shiftScheduleResponse;
+                                }).collect(Collectors.toList());
+                    }
+                    resultList.add(collect);
+                }
+        );
+        return resultList;
     }
 
     // from date to get Morning and Afternoon
