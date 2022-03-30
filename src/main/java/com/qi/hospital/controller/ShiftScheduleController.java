@@ -50,7 +50,7 @@ public class ShiftScheduleController {
     }
     @GetMapping("group_by_section")
     @ResponseStatus(HttpStatus.OK)
-    public List<List<ShiftScheduleResponse>> getShiftScheduleByConditionGroupBySectionId(@RequestParam(value = "startDate") String startDate,
+    public List<List<List<ShiftScheduleResponse>>>  getShiftScheduleByConditionGroupBySectionId(@RequestParam(value = "startDate") String startDate,
                                                                    @RequestParam(value = "endDate") String endDate){
             return shiftScheduleService.getShiftScheduleByConditionGroupBySectionId(startDate, endDate);
     }

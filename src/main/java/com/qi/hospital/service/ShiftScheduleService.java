@@ -80,8 +80,8 @@ public class ShiftScheduleService {
             }
         }));
 
-        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
-        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = getJobNumberDoctorResponseMap();
+
         return shiftSchedules.stream().map(shiftSchedule -> {
             ShiftScheduleResponse shiftScheduleResponse = shiftScheduleMapper.toResponse(shiftSchedule);
             shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
@@ -110,16 +110,10 @@ public class ShiftScheduleService {
     //according to the start date and end date query
     public List<ShiftScheduleResponse> getShiftScheduleByCondition(String startDate, String endDate, String sectionId) {
         //查找所有日期
-        LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
-        LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
-        List<String> strings = DateOperationUtil.collectTimeFrame(startDateLocal, endDateLocal);
-        List<LocalDate> localDates = strings
-                .stream()
-                .map(string -> DateOperationUtil.String2LocalDate(string))
-                .collect(Collectors.toList());
+        List<LocalDate> localDates = getLocalDatesFromStartDateAndEndDate(startDate, endDate);
 
-        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
-        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = getJobNumberDoctorResponseMap();
+
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDates);
         List<ShiftScheduleResponse> collect = new LinkedList<>();
         if (sectionId != null) {
@@ -143,25 +137,22 @@ public class ShiftScheduleService {
         return collect;
     }
 
-    public List<List<ShiftScheduleResponse>> getShiftScheduleByConditionGroupBySectionId(String startDate, String endDate) {
-        //查找所有日期
-        List<List<ShiftScheduleResponse>> resultList = new LinkedList<>();
-        List<Section> allSection = sectionRepository.findAll();
-        allSection.forEach(
+    //根据section ID 筛选号表
+    public List<List<List<ShiftScheduleResponse>>> getShiftScheduleByConditionGroupBySectionId(String startDate, String endDate) {
+        List<List<List<ShiftScheduleResponse>>> resultList = new LinkedList<>();
+        //查找所有部门和医生，医生按照工号生成实体Map
+        List<Section> allSections = sectionRepository.findAll();
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = getJobNumberDoctorResponseMap();
+
+        allSections.forEach(
                 section -> {
                     String sectionId = section.getId();
-                    LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
-                    LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
-                    List<String> strings = DateOperationUtil.collectTimeFrame(startDateLocal, endDateLocal);
-                    List<LocalDate> localDates = strings
-                            .stream()
-                            .map(string -> DateOperationUtil.String2LocalDate(string))
-                            .collect(Collectors.toList());
+                    List<LocalDate> localDatesPeriod = getLocalDatesFromStartDateAndEndDate(startDate, endDate);
 
-                    List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
-                    Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
-                    List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDates);
-                    List<ShiftScheduleResponse> collect = new LinkedList<>();
+
+                    List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDatesPeriod);
+                    List<ShiftScheduleResponse> collect;
+                    List<List<ShiftScheduleResponse>> list = new LinkedList<>();
                     if (sectionId != null) {
                         collect = shiftSchedules.stream()
                                 .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
@@ -172,6 +163,15 @@ public class ShiftScheduleService {
                                     shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
                                     return shiftScheduleResponse;
                                 }).collect(Collectors.toList());
+                        localDatesPeriod.forEach(date -> {
+                            //找到同一sectionID 下面， 相同日期的排班，形成列表
+                            List<ShiftScheduleResponse> collect1 = collect.stream()
+                                    .filter(c -> c.getLocalDate().equals(date))
+                                    .collect(Collectors.toList());
+                            list.add(collect1);
+                        });
+
+
                     } else {
                         collect = shiftSchedules.stream()
                                 .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
@@ -181,11 +181,36 @@ public class ShiftScheduleService {
                                     shiftScheduleResponse.setDoctorResponse(doctorResponseGroupByJobNumber.get(shiftScheduleResponse.getDoctorJobNumber()));
                                     return shiftScheduleResponse;
                                 }).collect(Collectors.toList());
+
+                        localDatesPeriod.forEach(date -> {
+                            //找到同一sectionID 下面， 相同日期的排班，形成列表
+                            List<ShiftScheduleResponse> collect1 = collect.stream()
+                                    .filter(c -> c.getLocalDate().equals(date))
+                                    .collect(Collectors.toList());
+                            list.add(collect1);
+                        });
                     }
-                    resultList.add(collect);
+
+                    resultList.add(list);
+
                 }
         );
         return resultList;
+    }
+
+    private List<LocalDate> getLocalDatesFromStartDateAndEndDate(String startDate, String endDate) {
+        LocalDate startDateLocal = DateOperationUtil.String2LocalDate(startDate);
+        LocalDate endDateLocal = DateOperationUtil.String2LocalDate(endDate);
+        List<String> strings = DateOperationUtil.collectTimeFrame(startDateLocal, endDateLocal);
+        return strings
+                .stream()
+                .map(string -> DateOperationUtil.String2LocalDate(string))
+                .collect(Collectors.toList());
+    }
+
+    private Map<String, DoctorResponse> getJobNumberDoctorResponseMap() {
+        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
+        return doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
     }
 
     // from date to get Morning and Afternoon
