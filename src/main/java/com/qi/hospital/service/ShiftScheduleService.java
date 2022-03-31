@@ -168,7 +168,9 @@ public class ShiftScheduleService {
                             List<ShiftScheduleResponse> collect1 = collect.stream()
                                     .filter(c -> c.getLocalDate().equals(date))
                                     .collect(Collectors.toList());
-                            list.add(collect1);
+                            if (collect1.size() != 0) {
+                                list.add(collect1);
+                            }
                         });
 
 
@@ -187,11 +189,14 @@ public class ShiftScheduleService {
                             List<ShiftScheduleResponse> collect1 = collect.stream()
                                     .filter(c -> c.getLocalDate().equals(date))
                                     .collect(Collectors.toList());
-                            list.add(collect1);
+                            if (collect1.size() != 0) {
+                                list.add(collect1);
+                            }
                         });
                     }
-
-                    resultList.add(list);
+                    if (list.size() != 0) {
+                        resultList.add(list);
+                    }
 
                 }
         );
