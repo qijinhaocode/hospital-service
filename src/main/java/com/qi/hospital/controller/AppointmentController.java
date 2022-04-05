@@ -1,11 +1,13 @@
 package com.qi.hospital.controller;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
 import com.qi.hospital.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -43,7 +45,7 @@ public class AppointmentController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteAppointment(@NotBlank @RequestHeader("token") String token, @NotBlank @RequestParam("doctorJobNumber") String doctorJobNumber,
-                                  @NotNull @RequestParam("localdate") LocalDate localDate) {
+                                  @NotNull @DateTimeFormat(pattern="yyyy-MM-dd")  @RequestParam("localdate") LocalDate localDate) {
         appointmentService.deleteAppointment(token, doctorJobNumber, localDate);
     }
 
