@@ -74,7 +74,6 @@ public class ShiftScheduleService {
                     if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
                         shiftSchedules.add(build);
                     }
-                    shiftSchedules.add(build);
                     shiftScheduleRepository.save(build);
                 }
             }
