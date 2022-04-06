@@ -1,9 +1,9 @@
 package com.qi.hospital.controller;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
+import com.qi.hospital.dto.appointment.GetAppointmentResponse;
 import com.qi.hospital.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Slf4j
@@ -45,7 +47,7 @@ public class AppointmentController {
     @DeleteMapping
     @ResponseStatus(HttpStatus.OK)
     public void deleteAppointment(@NotBlank @RequestHeader("token") String token, @NotBlank @RequestParam("doctorJobNumber") String doctorJobNumber,
-                                  @NotNull @DateTimeFormat(pattern="yyyy-MM-dd")  @RequestParam("localdate") LocalDate localDate) {
+                                  @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("localdate") LocalDate localDate) {
         appointmentService.deleteAppointment(token, doctorJobNumber, localDate);
     }
 
@@ -56,4 +58,9 @@ public class AppointmentController {
     }
 
     //user get all appointment record
+    @GetMapping
+    @ResponseStatus()
+    public List<GetAppointmentResponse> getAllAppointment(@NotBlank @RequestHeader("token") String token) {
+        return appointmentService.getAllAppointment(token);
+    }
 }

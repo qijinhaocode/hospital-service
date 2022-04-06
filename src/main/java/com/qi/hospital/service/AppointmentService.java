@@ -4,6 +4,8 @@ package com.qi.hospital.service;
 import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
+import com.qi.hospital.dto.appointment.GetAppointmentResponse;
+import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.AppointmentMapper;
@@ -16,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class AppointmentService {
     private final UserRepository userRepository;
     private final AppointmentMapper appointmentMapper;
     private final AppointmentStatus initAppointmentStatus = AppointmentStatus.PROCESSING;
+    private final DoctorService doctorService;
 
     public AppointmentResponse createAppointment(String token, AppointmentRequest appointmentRequest) {
         //判断还能不能挂号
@@ -76,7 +82,6 @@ public class AppointmentService {
         String userId = userOptional.get().getId();
         String doctorNumber = appointmentUpdateRequest.getDoctorJobNumber();
         LocalDate date = appointmentUpdateRequest.getLocalDate();
-        AppointmentStatus appointmentStatus = appointmentUpdateRequest.getAppointmentStatus();
         // find the appointment need to update
         Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDate(userId, doctorNumber, date);
         Appointment appointment = new Appointment();
@@ -91,5 +96,20 @@ public class AppointmentService {
             }
         }
         return appointmentMapper.toResponse(appointment);
+    }
+
+    public List<GetAppointmentResponse> getAllAppointment(String token) {
+        Optional<User> userOptional = userRepository.findByPhoneNumber(token);
+        validateUserExist(userOptional);
+        String userId = userOptional.get().getId();
+        List<Appointment> appointmentList = appointmentRepository.findByUserId(userId);
+        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
+        return appointmentList.stream().map(appointment -> {
+            GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
+            getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
+            return getAppointmentResponse;
+        }).collect(Collectors.toList());
+
+
     }
 }

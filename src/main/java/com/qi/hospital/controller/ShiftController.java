@@ -1,16 +1,11 @@
 package com.qi.hospital.controller;
 
 import com.qi.hospital.dto.doctor.DoctorQueryCriteria;
-import com.qi.hospital.dto.doctor.DoctorRequest;
-import com.qi.hospital.dto.doctor.DoctorResponse;
-import com.qi.hospital.dto.doctor.DoctorUpdateRequest;
 import com.qi.hospital.dto.shift.ShiftRequest;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftUpdateRequest;
-import com.qi.hospital.model.dcotor.Doctor;
 import com.qi.hospital.model.dcotor.DoctorTitle;
 import com.qi.hospital.model.shift.Shift;
-import com.qi.hospital.service.DoctorService;
 import com.qi.hospital.service.ShiftService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

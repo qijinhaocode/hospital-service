@@ -125,5 +125,9 @@ public class DoctorService {
         }).collect(Collectors.toList());
     }
 
-
+    public Map<String, DoctorResponse> getDoctorJobNumberDoctorResponseMap() {
+        List<DoctorResponse> doctorResponses = getAllDoctors();
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        return doctorResponseGroupByJobNumber;
+    }
 }

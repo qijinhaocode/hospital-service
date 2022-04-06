@@ -63,8 +63,7 @@ public class ShiftService {
     }
 
     public List<ShiftResponse> getAllDoctorsShifts() {
-        List<DoctorResponse> doctorResponses = doctorService.getAllDoctors();
-        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorService.getDoctorJobNumberDoctorResponseMap();
         List<Shift> shifts = shiftRepository.findAll();
         return shifts.stream().map(shift -> {
             ShiftResponse shiftResponse = shiftMapper.toResponse(shift);
