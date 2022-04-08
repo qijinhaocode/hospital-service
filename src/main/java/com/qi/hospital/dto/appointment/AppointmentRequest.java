@@ -18,6 +18,5 @@ public class AppointmentRequest {
     private LocalDate localDate;
     @NotNull
     private AppointmentTime appointmentTime;
-    @NotNull
     private AppointmentStatus appointmentStatus;
 }

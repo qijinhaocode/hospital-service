@@ -109,7 +109,5 @@ public class AppointmentService {
             getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
             return getAppointmentResponse;
         }).collect(Collectors.toList());
-
-
     }
 }

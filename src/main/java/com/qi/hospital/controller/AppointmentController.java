@@ -52,14 +52,14 @@ public class AppointmentController {
     }
 
     @PutMapping
-    @ResponseStatus()
+    @ResponseStatus(HttpStatus.OK)
     public AppointmentResponse updateAppointment(@NotBlank @RequestHeader("token") String token, @RequestBody @Valid AppointmentUpdateRequest appointmentUpdateRequest) {
         return appointmentService.updateAppointment(token, appointmentUpdateRequest);
     }
 
     //user get all appointment record
     @GetMapping
-    @ResponseStatus()
+    @ResponseStatus(HttpStatus.OK)
     public List<GetAppointmentResponse> getAllAppointment(@NotBlank @RequestHeader("token") String token) {
         return appointmentService.getAllAppointment(token);
     }
