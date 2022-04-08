@@ -4,9 +4,11 @@ import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
+import com.qi.hospital.dto.shift.ShiftScheduleUpdateRequest;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.ShiftScheduleMapper;
+import com.qi.hospital.model.appointment.AppointmentTime;
 import com.qi.hospital.model.section.Section;
 import com.qi.hospital.model.shift.Shift;
 import com.qi.hospital.model.shift.ShiftSchedule;
@@ -255,5 +257,15 @@ public class ShiftScheduleService {
         }
 
         return shift;
+    }
+
+    // update shift schedule
+    public void updateShiftSchedule(ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
+        ShiftSchedule shiftScheduleOriginInDB = shiftScheduleRepository.getById(shiftScheduleUpdateRequest.getId());
+        if (shiftScheduleUpdateRequest.getAppointmentTime().equals(AppointmentTime.MORNING))
+            shiftScheduleOriginInDB.setMorning(shiftScheduleOriginInDB.getMorning() - 1);
+        if (shiftScheduleUpdateRequest.getAppointmentTime().equals(AppointmentTime.AFTERNOON))
+            shiftScheduleOriginInDB.setAfternoon(shiftScheduleOriginInDB.getAfternoon() - 1);
+        shiftScheduleRepository.save(shiftScheduleOriginInDB);
     }
 }

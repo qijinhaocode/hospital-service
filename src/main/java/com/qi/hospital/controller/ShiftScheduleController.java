@@ -2,6 +2,7 @@ package com.qi.hospital.controller;
 
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
+import com.qi.hospital.dto.shift.ShiftScheduleUpdateRequest;
 import com.qi.hospital.service.ShiftScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,10 +50,17 @@ public class ShiftScheduleController {
                                                                    @RequestParam(value = "sectionId", required = false) String sectionId) {
         return shiftScheduleService.getShiftScheduleByCondition(startDate, endDate, sectionId);
     }
+
     @GetMapping("group_by_section")
     @ResponseStatus(HttpStatus.OK)
-    public List<List<List<ShiftScheduleResponse>>>  getShiftScheduleByConditionGroupBySectionId(@RequestParam(value = "startDate") String startDate,
-                                                                   @RequestParam(value = "endDate") String endDate){
-            return shiftScheduleService.getShiftScheduleByConditionGroupBySectionId(startDate, endDate);
+    public List<List<List<ShiftScheduleResponse>>> getShiftScheduleByConditionGroupBySectionId(@RequestParam(value = "startDate") String startDate,
+                                                                                               @RequestParam(value = "endDate") String endDate) {
+        return shiftScheduleService.getShiftScheduleByConditionGroupBySectionId(startDate, endDate);
+    }
+
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public void updateShiftSchedule(@Valid @RequestBody ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
+        shiftScheduleService.updateShiftSchedule(shiftScheduleUpdateRequest);
     }
 }

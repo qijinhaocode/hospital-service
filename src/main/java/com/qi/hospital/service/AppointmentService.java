@@ -51,6 +51,8 @@ public class AppointmentService {
         //初始化预约状态
         appointment.setAppointmentStatus(initAppointmentStatus);
         AppointmentResponse appointmentResponse = appointmentMapper.toResponse(appointmentRepository.save(appointment));
+        // 对应医生可挂号数量 减1
+
         return appointmentResponse;
     }
 

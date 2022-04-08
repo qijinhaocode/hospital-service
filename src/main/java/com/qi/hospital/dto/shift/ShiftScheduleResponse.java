@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 @Data
 public class ShiftScheduleResponse {
+    private String id;
     private Section section;
     private String doctorJobNumber;
     private LocalDate localDate;
