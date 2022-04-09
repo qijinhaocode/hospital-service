@@ -5,6 +5,7 @@ import com.qi.hospital.model.appointment.AppointmentTime;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class AppointmentResponse {
@@ -13,4 +14,5 @@ public class AppointmentResponse {
     private LocalDate localDate;
     private AppointmentTime appointmentTime;
     private AppointmentStatus appointmentStatus;
+    private LocalDateTime payTime;
 }

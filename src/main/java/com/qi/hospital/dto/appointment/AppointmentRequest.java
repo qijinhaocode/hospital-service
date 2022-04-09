@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class AppointmentRequest {
@@ -19,4 +20,6 @@ public class AppointmentRequest {
     @NotNull
     private AppointmentTime appointmentTime;
     private AppointmentStatus appointmentStatus;
+    @NotNull
+    private LocalDateTime payTime;
 }

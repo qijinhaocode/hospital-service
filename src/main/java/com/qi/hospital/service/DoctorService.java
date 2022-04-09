@@ -130,4 +130,12 @@ public class DoctorService {
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
         return doctorResponseGroupByJobNumber;
     }
+
+    public String getSectionIdByDoctorJobNumber(String doctorJobNumber) {
+        Optional<Doctor> doctorOptional = doctorRepository.findByJobNumber(doctorJobNumber);
+        if (!doctorOptional.isPresent()) {
+            throw new BusinessException(CommonErrorCode.E_100119);
+        }
+        return doctorOptional.get().getSectionId();
+    }
 }

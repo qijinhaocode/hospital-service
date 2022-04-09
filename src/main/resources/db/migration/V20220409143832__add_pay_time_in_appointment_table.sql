@@ -1,0 +1,1 @@
+ALTER TABLE t_appointment ADD pay_time  DATETIME COMMENT '支付时间';

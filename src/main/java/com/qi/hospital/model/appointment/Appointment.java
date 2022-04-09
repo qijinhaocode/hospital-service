@@ -14,6 +14,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -35,4 +36,5 @@ public class Appointment {
     private AppointmentTime appointmentTime;
     @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
+    private LocalDateTime payTime;
 }

@@ -6,6 +6,7 @@ import com.qi.hospital.dto.appointment.GetAppointmentResponse;
 import com.qi.hospital.model.appointment.Appointment;
 import org.mapstruct.Builder;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public interface AppointmentMapper {
 
     GetAppointmentResponse toGetResponse(Appointment appointment);
 
+    @Mapping(source = "payTime", target = "payTime")
     Appointment toDomain(AppointmentRequest appointmentRequest);
 
     AppointmentResponse toResponse(Appointment appointment);
