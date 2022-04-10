@@ -96,6 +96,11 @@ public class AppointmentService {
                 appointmentOptional.get().setAppointmentStatus(appointmentUpdateRequest.getAppointmentStatus());
                 appointment = appointmentRepository.save(appointmentOptional.get());
             }
+            if (appointmentOptional.get().equals(AppointmentStatus.PROCESSING)
+                    && appointmentUpdateRequest.getAppointmentStatus().equals(AppointmentStatus.CANCEL)) {
+                appointmentOptional.get().setAppointmentStatus(appointmentUpdateRequest.getAppointmentStatus());
+                appointment = appointmentRepository.save(appointmentOptional.get());
+            }
         }
         return appointmentMapper.toResponse(appointment);
     }
