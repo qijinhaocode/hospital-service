@@ -11,6 +11,7 @@ import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.AppointmentMapper;
 import com.qi.hospital.model.appointment.Appointment;
 import com.qi.hospital.model.appointment.AppointmentStatus;
+import com.qi.hospital.model.appointment.AppointmentTime;
 import com.qi.hospital.model.user.User;
 import com.qi.hospital.repository.AppointmentRepository;
 import com.qi.hospital.repository.UserRepository;
@@ -18,6 +19,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -111,6 +114,27 @@ public class AppointmentService {
         String userId = userOptional.get().getId();
         List<Appointment> appointmentList = appointmentRepository.findByUserId(userId);
         Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
+        //modify appointment status according by date
+         appointmentList.stream().forEach(appointment -> {
+             //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
+             if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)){
+                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12,0,0)))){
+                     //所有process 的 修改为done
+                     if(appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                     appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                     appointmentRepository.save(appointment);
+                 }
+             }
+             if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)){
+                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18,0,0)))){
+                     //所有process 的 修改为done
+                     if(appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                         appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                     appointmentRepository.save(appointment);
+                 }
+             }
+         });
+
         return appointmentList.stream().map(appointment -> {
             GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
             getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
