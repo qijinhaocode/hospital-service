@@ -117,4 +117,16 @@ public class AppointmentService {
             return getAppointmentResponse;
         }).collect(Collectors.toList());
     }
+
+    public Double getIncomeByDate(LocalDate localDate) {
+        // find all appointment order which is done and count
+        List<Appointment> byLocalDate = appointmentRepository.findByLocalDate(localDate);
+        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
+        List<Double> collect = byLocalDate.stream()
+                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                .map(a -> doctorJobNumberDoctorResponseMap.get(a.getDoctorJobNumber()).getRegistrationFee())
+                .collect(Collectors.toList());
+        return Double.parseDouble(String.valueOf(collect.stream().count()));
+
+    }
 }

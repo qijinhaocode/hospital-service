@@ -63,4 +63,10 @@ public class AppointmentController {
     public List<GetAppointmentResponse> getAllAppointment(@NotBlank @RequestHeader("token") String token) {
         return appointmentService.getAllAppointment(token);
     }
+
+    @GetMapping("income")
+    @ResponseStatus(HttpStatus.OK)
+    public Double getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("localDate") LocalDate localDate){
+        return appointmentService.getIncomeByDate(localDate);
+    }
 }
