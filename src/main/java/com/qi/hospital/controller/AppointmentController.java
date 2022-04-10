@@ -1,5 +1,6 @@
 package com.qi.hospital.controller;
 
+import com.qi.hospital.dto.appointment.AppointmentIncomeResponse;
 import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
@@ -66,7 +67,7 @@ public class AppointmentController {
 
     @GetMapping("income")
     @ResponseStatus(HttpStatus.OK)
-    public Double getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("localDate") LocalDate localDate){
+    public AppointmentIncomeResponse getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("localDate") LocalDate localDate){
         return appointmentService.getIncomeByDate(localDate);
     }
 }

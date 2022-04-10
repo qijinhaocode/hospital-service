@@ -1,6 +1,7 @@
 package com.qi.hospital.service;
 
 
+import com.qi.hospital.dto.appointment.AppointmentIncomeResponse;
 import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
@@ -115,25 +116,25 @@ public class AppointmentService {
         List<Appointment> appointmentList = appointmentRepository.findByUserId(userId);
         Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
-         appointmentList.stream().forEach(appointment -> {
-             //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
-             if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)){
-                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12,0,0)))){
-                     //所有process 的 修改为done
-                     if(appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                     appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                     appointmentRepository.save(appointment);
-                 }
-             }
-             if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)){
-                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18,0,0)))){
-                     //所有process 的 修改为done
-                     if(appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                         appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                     appointmentRepository.save(appointment);
-                 }
-             }
-         });
+        appointmentList.stream().forEach(appointment -> {
+            //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
+            if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
+                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
+                    //所有process 的 修改为done
+                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                    appointmentRepository.save(appointment);
+                }
+            }
+            if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
+                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18, 0, 0)))) {
+                    //所有process 的 修改为done
+                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                    appointmentRepository.save(appointment);
+                }
+            }
+        });
 
         return appointmentList.stream().map(appointment -> {
             GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
@@ -142,15 +143,40 @@ public class AppointmentService {
         }).collect(Collectors.toList());
     }
 
-    public Double getIncomeByDate(LocalDate localDate) {
+    public AppointmentIncomeResponse getIncomeByDate(LocalDate localDate) {
+        List<Appointment> appointmentList = appointmentRepository.findAll();
+        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
+        //modify appointment status according by date
+        appointmentList.stream().forEach(appointment -> {
+            //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
+            if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
+                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
+                    //所有process 的 修改为done
+                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                    appointmentRepository.save(appointment);
+                }
+            }
+            if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
+                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18, 0, 0)))) {
+                    //所有process 的 修改为done
+                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
+                    appointmentRepository.save(appointment);
+                }
+            }
+        });
+
+        List<GetAppointmentResponse> collect = appointmentList.stream().map(appointment -> {
+            GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
+            getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
+            return getAppointmentResponse;
+        }).collect(Collectors.toList());
         // find all appointment order which is done and count
         List<Appointment> byLocalDate = appointmentRepository.findByLocalDate(localDate);
-        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
-        List<Double> collect = byLocalDate.stream()
+        Double income = byLocalDate.stream()
                 .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
-                .map(a -> doctorJobNumberDoctorResponseMap.get(a.getDoctorJobNumber()).getRegistrationFee())
-                .collect(Collectors.toList());
-        return Double.parseDouble(String.valueOf(collect.stream().count()));
-
+                .mapToDouble(a -> doctorJobNumberDoctorResponseMap.get(a.getDoctorJobNumber()).getRegistrationFee()).sum();
+        return AppointmentIncomeResponse.builder().appointmentResponses(collect).income(income).build();
     }
 }
