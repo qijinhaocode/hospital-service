@@ -93,7 +93,7 @@ public class UserService {
         return userMapper.toResponse(userOptional.get());
     }
 
-    private void validateUserExist(Optional<User> userOptional) {
+    public void validateUserExist(Optional<User> userOptional) {
         if (!userOptional.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100103);
         }
