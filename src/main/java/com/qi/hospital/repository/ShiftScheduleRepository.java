@@ -14,4 +14,5 @@ public interface ShiftScheduleRepository extends JpaRepository<ShiftSchedule,Str
     Optional<ShiftSchedule> findByLocalDateAndDoctorJobNumber(LocalDate localDate, String jonNumber);
 
     List<ShiftSchedule> findByLocalDateInOrderByLocalDate(List<LocalDate> localDates);
+
 }
