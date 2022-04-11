@@ -13,7 +13,9 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<Appointment, String>, JpaSpecificationExecutor<Appointment> {
     Optional<Appointment> findByUserIdAndDoctorJobNumberAndLocalDate(String userId, String doctorNumber, LocalDate localDate);
 
-    List<Appointment> findByUserId(String userId);
+    List<Appointment> findByUserIdOrderByPayTimeDesc(String userId);
 
     List<Appointment> findByLocalDate(LocalDate localDate);
+
+    List<Appointment> findAllByOrderByPayTimeDesc();
 }

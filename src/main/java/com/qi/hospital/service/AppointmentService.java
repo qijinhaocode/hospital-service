@@ -113,7 +113,7 @@ public class AppointmentService {
         Optional<User> userOptional = userRepository.findByPhoneNumber(token);
         validateUserExist(userOptional);
         String userId = userOptional.get().getId();
-        List<Appointment> appointmentList = appointmentRepository.findByUserId(userId);
+        List<Appointment> appointmentList = appointmentRepository.findByUserIdOrderByPayTimeDesc(userId);
         Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
         appointmentList.stream().forEach(appointment -> {
@@ -144,7 +144,7 @@ public class AppointmentService {
     }
 
     public AppointmentIncomeResponse getIncomeByDate(LocalDate localDate) {
-        List<Appointment> appointmentList = appointmentRepository.findAll();
+        List<Appointment> appointmentList = appointmentRepository.findAllByOrderByPayTimeDesc();
         Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
         appointmentList.stream().forEach(appointment -> {
