@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface AdviceRepository extends JpaRepository<Advice,String> {
-
+    List<Advice> findAllByOrderByCreateDateTimeDesc();
 }

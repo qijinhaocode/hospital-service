@@ -42,7 +42,8 @@ public class AdviceController {
     public AdviceResponse createAdvice(@RequestHeader("token") String token, @RequestBody @Valid AdviceRequest adviceRequest) {
         return adviceService.createAdvice(token, adviceRequest);
     }
-//
+
+    //
 //    @DeleteMapping()
 //    @ResponseStatus(HttpStatus.OK)
 //    public void deleteSection(@RequestParam(value = "name") String name) {
@@ -61,9 +62,9 @@ public class AdviceController {
 //        return sectionService.querySection(name);
 //    }
 //
-//    @GetMapping("all")
-//    @ResponseStatus(HttpStatus.OK)
-//    public List<Section> getSections() {
-//        return sectionService.getAllSection();
-//    }
+    @GetMapping("all")
+    @ResponseStatus(HttpStatus.OK)
+    public List<AdviceResponse> getAllAdvices() {
+        return adviceService.getAllAdvices();
+    }
 }

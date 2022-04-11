@@ -13,7 +13,9 @@ import com.qi.hospital.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,5 +43,16 @@ public class AdviceService {
                 .createTime(saveAdvice.getCreateDateTime())
                 .userResponse(userResponse)
                 .build();
+    }
+
+    // 根据反馈日期倒叙查所有意见
+    public List<AdviceResponse> getAllAdvices() {
+        List<Advice> allByOrderBOrderByCreateDateTimeDesc = adviceRepository.findAllByOrderByCreateDateTimeDesc();
+
+        return allByOrderBOrderByCreateDateTimeDesc.stream().map(advice -> AdviceResponse.builder()
+                .advice(advice.getAdvice())
+                .createTime(advice.getCreateDateTime())
+                .userResponse(userMapper.toResponse(userRepository.findById(advice.getUserId()).get()))
+                .build()).collect(Collectors.toList());
     }
 }
