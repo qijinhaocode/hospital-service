@@ -95,12 +95,12 @@ public class AppointmentService {
             if (appointmentOptional.get().getAppointmentStatus().equals(AppointmentStatus.DONE)) {
                 throw new BusinessException(CommonErrorCode.E_100118);
             }
-            if (appointmentOptional.get().equals(AppointmentStatus.PROCESSING)
+            if (appointmentOptional.get().getAppointmentStatus().equals(AppointmentStatus.PROCESSING)
                     && appointmentUpdateRequest.getAppointmentStatus().equals(AppointmentStatus.DONE)) {
                 appointmentOptional.get().setAppointmentStatus(appointmentUpdateRequest.getAppointmentStatus());
                 appointment = appointmentRepository.save(appointmentOptional.get());
             }
-            if (appointmentOptional.get().equals(AppointmentStatus.PROCESSING)
+            if (appointmentOptional.get().getAppointmentStatus().equals(AppointmentStatus.PROCESSING)
                     && appointmentUpdateRequest.getAppointmentStatus().equals(AppointmentStatus.CANCEL)) {
                 appointmentOptional.get().setAppointmentStatus(appointmentUpdateRequest.getAppointmentStatus());
                 appointment = appointmentRepository.save(appointmentOptional.get());
