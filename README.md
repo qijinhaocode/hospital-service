@@ -5,5 +5,5 @@ Hospital Registration Management system
 
 [trello](https://trello.com/b/x7uklRtO/hospital)
 
-commit message rule: Card Number  message (capitalize the first letter)
+Commit message rule: Card Number  message (capitalize the first letter)
 
