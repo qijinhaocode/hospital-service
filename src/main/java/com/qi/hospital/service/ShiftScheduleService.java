@@ -61,7 +61,7 @@ public class ShiftScheduleService {
         shiftSchedulesFromStartDateToEndDate.stream()
                 .filter(shiftSchedule -> shiftSchedule.getLocalDate().isAfter(LocalDate.now()))
                 .forEach(shiftSchedule -> {
-                    if (!doctorShiftSetByJobNumber.contains(shiftSchedule.getDoctorJobNumber())){
+                    if (!doctorShiftSetByJobNumber.contains(shiftSchedule.getDoctorJobNumber())) {
                         shiftScheduleRepository.delete(shiftSchedule);
                     }
                 });
@@ -285,5 +285,13 @@ public class ShiftScheduleService {
         if (shiftScheduleUpdateRequest.getAppointmentTime().equals(AppointmentTime.AFTERNOON))
             shiftScheduleOriginInDB.setAfternoon(shiftScheduleOriginInDB.getAfternoon() - 1);
         shiftScheduleRepository.save(shiftScheduleOriginInDB);
+    }
+
+    public void deleteShiftSchedule(String id) {
+        Optional<ShiftSchedule> shiftScheduleOptional = shiftScheduleRepository.findById(id);
+        if (shiftScheduleOptional.isPresent()) {
+            shiftScheduleRepository.deleteById(id);
+        }
+        throw new BusinessException(CommonErrorCode.E_100120);
     }
 }
