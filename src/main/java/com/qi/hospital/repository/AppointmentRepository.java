@@ -1,6 +1,7 @@
 package com.qi.hospital.repository;
 
 import com.qi.hospital.model.appointment.Appointment;
+import com.qi.hospital.model.shift.ShiftSchedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -16,6 +17,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
     List<Appointment> findByUserIdOrderByPayTimeDesc(String userId);
 
     List<Appointment> findByLocalDate(LocalDate localDate);
+
+    List<Appointment> findByLocalDateInOrderByPayTimeDesc(List<LocalDate> localDates);
+
 
     List<Appointment> findAllByOrderByPayTimeDesc();
 }

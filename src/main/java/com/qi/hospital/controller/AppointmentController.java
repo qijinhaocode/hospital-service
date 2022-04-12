@@ -67,7 +67,8 @@ public class AppointmentController {
 
     @GetMapping("income")
     @ResponseStatus(HttpStatus.OK)
-    public AppointmentIncomeResponse getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("localDate") LocalDate localDate){
-        return appointmentService.getIncomeByDate(localDate);
+    public AppointmentIncomeResponse getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("startDate") LocalDate startDate,
+                                                     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("endDate") LocalDate endDate) {
+        return appointmentService.getIncomeByDate(startDate, endDate);
     }
 }

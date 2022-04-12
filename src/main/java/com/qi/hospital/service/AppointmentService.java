@@ -13,15 +13,18 @@ import com.qi.hospital.mapper.AppointmentMapper;
 import com.qi.hospital.model.appointment.Appointment;
 import com.qi.hospital.model.appointment.AppointmentStatus;
 import com.qi.hospital.model.appointment.AppointmentTime;
+import com.qi.hospital.model.shift.ShiftSchedule;
 import com.qi.hospital.model.user.User;
 import com.qi.hospital.repository.AppointmentRepository;
 import com.qi.hospital.repository.UserRepository;
+import com.qi.hospital.util.DateOperationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -143,8 +146,15 @@ public class AppointmentService {
         }).collect(Collectors.toList());
     }
 
-    public AppointmentIncomeResponse getIncomeByDate(LocalDate localDate) {
-        List<Appointment> appointmentList = appointmentRepository.findAllByOrderByPayTimeDesc();
+    public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate) {
+        //日期转星期，遍历这个日期之间所有，生成号表。
+        List<String> strings = DateOperationUtil.collectTimeFrame(startDate, endDate);
+        List<LocalDate> localDates = strings
+                .stream()
+                .map(string -> DateOperationUtil.String2LocalDate(string))
+                .collect(Collectors.toList());
+
+        List<Appointment> appointmentList = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
         appointmentList.stream().forEach(appointment -> {
@@ -173,8 +183,8 @@ public class AppointmentService {
             return getAppointmentResponse;
         }).collect(Collectors.toList());
         // find all appointment order which is done and count
-        List<Appointment> byLocalDate = appointmentRepository.findByLocalDate(localDate);
-        Double income = byLocalDate.stream()
+        List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
+        Double income = appointmentsAfter.stream()
                 .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
                 .mapToDouble(a -> doctorJobNumberDoctorResponseMap.get(a.getDoctorJobNumber()).getRegistrationFee()).sum();
         return AppointmentIncomeResponse.builder().appointmentResponses(collect).income(income).build();
