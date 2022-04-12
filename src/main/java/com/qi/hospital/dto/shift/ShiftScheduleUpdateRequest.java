@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 public class ShiftScheduleUpdateRequest {
     @NotBlank
     private String id;
-    @NotNull
     private AppointmentTime appointmentTime;
+    private Integer morningAppointmentCount;
+    private Integer afternoonAppointmentCount;
 }
