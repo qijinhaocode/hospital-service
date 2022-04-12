@@ -305,6 +305,7 @@ public class ShiftScheduleService {
         Optional<ShiftSchedule> shiftScheduleOptional = shiftScheduleRepository.findById(id);
         if (shiftScheduleOptional.isPresent()) {
             shiftScheduleRepository.deleteById(id);
+            return;
         }
         throw new BusinessException(CommonErrorCode.E_100120);
     }
