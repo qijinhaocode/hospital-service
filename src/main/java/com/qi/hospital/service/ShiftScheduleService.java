@@ -41,7 +41,9 @@ public class ShiftScheduleService {
     private final SectionRepository sectionRepository;
 
     //create ShiftSchedule by start date and end date (generate)
+    //同一日期只能，只能生成一次号表
     public List<ShiftScheduleResponse> createShiftSchedule(ShiftScheduleRequest shiftScheduleRequest) {
+
         //日期转星期，遍历这个日期之间所有，生成号表。
         List<String> strings = DateOperationUtil.collectTimeFrame(shiftScheduleRequest.getStartDate(), shiftScheduleRequest.getEndDate());
         List<LocalDate> localDates = strings
@@ -69,17 +71,18 @@ public class ShiftScheduleService {
                 Optional<ShiftSchedule> byLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(localDate, doctorsShift.getDoctorJobNumber());
                 //如果按照日期存在就替换
                 if (byLocalDateAndDoctorJobNumber.isPresent()) {
-                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
-                    ShiftSchedule build = ShiftSchedule.builder()
-                            .id(byLocalDateAndDoctorJobNumber.get().getId())
-                            .doctorJobNumber(doctorsShift.getDoctorJobNumber())
-                            .localDate(localDate)
-                            .morning(morningAndAfternoonReservationNumberFromDate[0])
-                            .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
-                    if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
-                        shiftSchedules.add(build);
-                    }
-                    shiftScheduleRepository.save(build);
+                    // 最新逻辑，如果号表存在数据库就什么都不做
+//                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+//                    ShiftSchedule build = ShiftSchedule.builder()
+//                            .id(byLocalDateAndDoctorJobNumber.get().getId())
+//                            .doctorJobNumber(doctorsShift.getDoctorJobNumber())
+//                            .localDate(localDate)
+//                            .morning(morningAndAfternoonReservationNumberFromDate[0])
+//                            .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
+//                    if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
+//                        shiftSchedules.add(build);
+//                    }
+//                    shiftScheduleRepository.save(build);
                     //不存在就直接创建
                 } else {
                     Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());

@@ -69,6 +69,7 @@ public class DoctorService {
         Doctor doctorOrigin = doctorOriginOptional.get();
         Doctor doctorSrc = doctorMapper.toDoctor(doctorUpdateRequest);
         JpaUtil.copyNotNullProperties(doctorSrc, doctorOrigin);
+        //如果这个医生已经有预约挂号信息在process 中，则不能修改其title 和 科室
         doctorRepository.save(doctorOrigin);
     }
 
