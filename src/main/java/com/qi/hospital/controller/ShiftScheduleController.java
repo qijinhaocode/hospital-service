@@ -60,12 +60,13 @@ public class ShiftScheduleController {
         return shiftScheduleService.getShiftScheduleByConditionGroupBySectionId(startDate, endDate);
     }
 
+    //修改表号
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     public void updateShiftSchedule(@Valid @RequestBody ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
         shiftScheduleService.updateShiftSchedule(shiftScheduleUpdateRequest);
     }
-
+    // 删除号表
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public void deleteShiftSchedule( @PathVariable String id){

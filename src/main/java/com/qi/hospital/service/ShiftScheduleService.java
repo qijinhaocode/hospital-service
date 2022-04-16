@@ -278,7 +278,7 @@ public class ShiftScheduleService {
     }
 
     // update shift schedule
-    public void updateShiftSchedule(ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
+    public ShiftScheduleResponse updateShiftSchedule(ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
         ShiftSchedule shiftScheduleOriginInDB = shiftScheduleRepository.getById(shiftScheduleUpdateRequest.getId());
         if (shiftScheduleUpdateRequest.getMorningAppointmentCount() != null || shiftScheduleUpdateRequest.getAfternoonAppointmentCount() != null) {
             if (shiftScheduleUpdateRequest.getMorningAppointmentCount() != null) {
@@ -287,8 +287,7 @@ public class ShiftScheduleService {
             if (shiftScheduleUpdateRequest.getAfternoonAppointmentCount() != null) {
                 shiftScheduleOriginInDB.setAfternoon(shiftScheduleUpdateRequest.getAfternoonAppointmentCount());
             }
-            shiftScheduleRepository.save(shiftScheduleOriginInDB);
-            return;
+            return shiftScheduleMapper.toResponse(shiftScheduleRepository.save(shiftScheduleOriginInDB));
         }
         if (shiftScheduleUpdateRequest.getAppointmentTime() != null) {
             if (shiftScheduleUpdateRequest.getAppointmentTime().equals(AppointmentTime.MORNING)) {
@@ -297,8 +296,9 @@ public class ShiftScheduleService {
             if (shiftScheduleUpdateRequest.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
                 shiftScheduleOriginInDB.setAfternoon(shiftScheduleOriginInDB.getAfternoon() - 1);
             }
-            shiftScheduleRepository.save(shiftScheduleOriginInDB);
+            return shiftScheduleMapper.toResponse(shiftScheduleRepository.save(shiftScheduleOriginInDB));
         }
+        return new ShiftScheduleResponse();
     }
 
     public void deleteShiftSchedule(String id) {
