@@ -6,7 +6,6 @@ import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
 import com.qi.hospital.dto.appointment.GetAppointmentResponse;
-import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.AppointmentMapper;
@@ -24,7 +23,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -55,14 +53,13 @@ public class AppointmentService {
         Appointment appointment = appointmentMapper.toDomain(appointmentRequest);
         //初始化预约状态
         appointment.setAppointmentStatus(initAppointmentStatus);
-        AppointmentResponse appointmentResponse = appointmentMapper.toResponse(appointmentRepository.save(appointment));
         // 对应医生可挂号数量 减1
 
-        return appointmentResponse;
+        return appointmentMapper.toResponse(appointmentRepository.save(appointment));
     }
 
     private void validateUserExist(Optional<User> userOptional) {
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100103);
         }
     }
@@ -77,9 +74,7 @@ public class AppointmentService {
         Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDate(userId,
                 doctorJobNumber,
                 localDate);
-        if (appointmentOptional.isPresent()) {
-            appointmentRepository.delete(appointmentOptional.get());
-        }
+        appointmentOptional.ifPresent(appointmentRepository::delete);
     }
 
     public AppointmentResponse updateAppointment(String token, AppointmentUpdateRequest appointmentUpdateRequest) {
@@ -115,9 +110,8 @@ public class AppointmentService {
         validateUserExist(userOptional);
         String userId = userOptional.get().getId();
         List<Appointment> appointmentList = appointmentRepository.findByUserIdOrderByPayTimeDesc(userId);
-        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
-        appointmentList.stream().forEach(appointment -> {
+        appointmentList.forEach(appointment -> {
             //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
             if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
@@ -137,11 +131,7 @@ public class AppointmentService {
             }
         });
 
-        return appointmentList.stream().map(appointment -> {
-            GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
-            getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
-            return getAppointmentResponse;
-        }).collect(Collectors.toList());
+        return appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
     }
 
     public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate) {
@@ -149,13 +139,12 @@ public class AppointmentService {
         List<String> strings = DateOperationUtil.collectTimeFrame(startDate, endDate);
         List<LocalDate> localDates = strings
                 .stream()
-                .map(string -> DateOperationUtil.String2LocalDate(string))
+                .map(DateOperationUtil::String2LocalDate)
                 .collect(Collectors.toList());
 
         List<Appointment> appointmentList = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
-        Map<String, DoctorResponse> doctorJobNumberDoctorResponseMap = doctorService.getDoctorJobNumberDoctorResponseMap();
         //modify appointment status according by date
-        appointmentList.stream().forEach(appointment -> {
+        appointmentList.forEach(appointment -> {
             //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
             if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
                 if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
@@ -175,16 +164,12 @@ public class AppointmentService {
             }
         });
 
-        List<GetAppointmentResponse> collect = appointmentList.stream().map(appointment -> {
-            GetAppointmentResponse getAppointmentResponse = appointmentMapper.toGetResponse(appointment);
-            getAppointmentResponse.setDoctorResponse(doctorJobNumberDoctorResponseMap.get(appointment.getDoctorJobNumber()));
-            return getAppointmentResponse;
-        }).collect(Collectors.toList());
+        List<GetAppointmentResponse> collect = appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
         // find all appointment order which is done and count
         List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Double income = appointmentsAfter.stream()
                 .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
-                .mapToDouble(a -> doctorJobNumberDoctorResponseMap.get(a.getDoctorJobNumber()).getRegistrationFee()).sum();
+                .mapToDouble(Appointment::getRegistrationFee).sum();
         return AppointmentIncomeResponse.builder().appointmentResponses(collect).income(income).build();
     }
 }

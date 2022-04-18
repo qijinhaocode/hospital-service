@@ -2,6 +2,7 @@ package com.qi.hospital.dto.appointment;
 
 import com.qi.hospital.model.appointment.AppointmentStatus;
 import com.qi.hospital.model.appointment.AppointmentTime;
+import com.qi.hospital.model.dcotor.DoctorTitle;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -22,4 +23,14 @@ public class AppointmentRequest {
     private AppointmentStatus appointmentStatus;
     @NotNull
     private LocalDateTime payTime;
+    @NotNull
+    private String doctorName;
+    @NotNull
+    private DoctorTitle doctorTitle;
+    @NotNull
+    private String doctorIntro;
+    @NotNull
+    private String sectionName;
+    @NotNull
+    private Double registrationFee;
 }

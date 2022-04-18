@@ -2,6 +2,7 @@ package com.qi.hospital.dto.appointment;
 
 import com.qi.hospital.model.appointment.AppointmentStatus;
 import com.qi.hospital.model.appointment.AppointmentTime;
+import com.qi.hospital.model.dcotor.DoctorTitle;
 import lombok.Data;
 
 import java.time.LocalDate;
@@ -15,4 +16,10 @@ public class AppointmentResponse {
     private AppointmentTime appointmentTime;
     private AppointmentStatus appointmentStatus;
     private LocalDateTime payTime;
+
+    private String doctorName;
+    private DoctorTitle doctorTitle;
+    private String doctorIntro;
+    private String sectionName;
+    private Double registrationFee;
 }

@@ -1,5 +1,6 @@
 package com.qi.hospital.model.appointment;
 
+import com.qi.hospital.model.dcotor.DoctorTitle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -37,4 +38,11 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private AppointmentStatus appointmentStatus;
     private LocalDateTime payTime;
+
+    // 医生相关信息需要保存在对应列，不能根据医生工号查询
+    private String doctorName;
+    private DoctorTitle doctorTitle;
+    private String doctorIntro;
+    private String sectionName;
+    private Double registrationFee;
 }
