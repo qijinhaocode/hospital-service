@@ -1,5 +1,6 @@
 package com.qi.hospital.model.shift;
 
+import com.qi.hospital.model.dcotor.DoctorTitle;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,4 +31,11 @@ public class ShiftSchedule {
     private LocalDate localDate;
     private Integer morning;
     private Integer afternoon;
+
+    //不绑定外键
+    private String doctorName;
+    private DoctorTitle doctorTitle;
+    private String doctorIntro;
+    private String sectionName;
+    private Double registrationFee;
 }

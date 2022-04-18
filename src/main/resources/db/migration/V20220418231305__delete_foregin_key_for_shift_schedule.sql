@@ -1,0 +1,1 @@
+ALTER TABLE t_shift_schedule DROP FOREIGN KEY t_shift_schedule_ibfk_1;
