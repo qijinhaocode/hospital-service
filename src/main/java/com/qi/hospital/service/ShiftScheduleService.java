@@ -1,5 +1,9 @@
 package com.qi.hospital.service;
 
+import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.metadata.Sheet;
+import com.alibaba.excel.metadata.Table;
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
@@ -19,8 +23,14 @@ import com.qi.hospital.util.DateOperationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -289,5 +299,23 @@ public class ShiftScheduleService {
             return;
         }
         throw new BusinessException(CommonErrorCode.E_100120);
+    }
+
+    public void createShiftScheduleExcelAccordingDateFrame(String startDate, String endDate) throws FileNotFoundException {
+        List<ShiftScheduleResponse> shiftScheduleResponses = getShiftScheduleByConditionGroupBySectionId(startDate, endDate).stream()
+                .flatMap(Collection::stream)
+                .flatMap(Collection::stream)
+                .peek(s -> s.setDoctorTitleDescription(s.getDoctorTitle().getDescription()))
+                .collect(Collectors.toList());
+
+        try (OutputStream out = new FileOutputStream(startDate.toString() + "至"+ endDate.toString()+"号表.xlsx")) {
+            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
+            Sheet shiftScheduleSheet = new Sheet(1, 0, ShiftScheduleResponse.class);
+            shiftScheduleSheet.setSheetName("号表页");
+            writer.write(shiftScheduleResponses, shiftScheduleSheet);
+            writer.finish();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

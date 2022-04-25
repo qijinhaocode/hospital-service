@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 
@@ -71,5 +73,13 @@ public class ShiftScheduleController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteShiftSchedule( @PathVariable String id){
         shiftScheduleService.deleteShiftSchedule(id);
+    }
+
+    //导出excel
+    @PostMapping("/excel_export")
+    @ResponseStatus(HttpStatus.OK)
+    public void exportShiftScheduleExcelAccordingDateFrame(@NotNull @RequestParam(value = "startDate") String startDate,
+                                                           @NotNull @RequestParam(value = "endDate") String endDate) throws FileNotFoundException {
+        shiftScheduleService.createShiftScheduleExcelAccordingDateFrame(startDate,endDate);
     }
 }
