@@ -79,7 +79,7 @@ public class ShiftScheduleController {
     @PostMapping("/excel_export")
     @ResponseStatus(HttpStatus.OK)
     public void exportShiftScheduleExcelAccordingDateFrame(@NotNull @RequestParam(value = "startDate") String startDate,
-                                                           @NotNull @RequestParam(value = "endDate") String endDate) throws FileNotFoundException {
+                                                           @NotNull @RequestParam(value = "endDate") String endDate) {
         shiftScheduleService.createShiftScheduleExcelAccordingDateFrame(startDate,endDate);
     }
 }

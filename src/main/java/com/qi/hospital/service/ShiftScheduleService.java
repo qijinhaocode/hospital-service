@@ -301,7 +301,7 @@ public class ShiftScheduleService {
         throw new BusinessException(CommonErrorCode.E_100120);
     }
 
-    public void createShiftScheduleExcelAccordingDateFrame(String startDate, String endDate) throws FileNotFoundException {
+    public void createShiftScheduleExcelAccordingDateFrame(String startDate, String endDate) {
         List<ShiftScheduleResponse> shiftScheduleResponses = getShiftScheduleByConditionGroupBySectionId(startDate, endDate).stream()
                 .flatMap(Collection::stream)
                 .flatMap(Collection::stream)
