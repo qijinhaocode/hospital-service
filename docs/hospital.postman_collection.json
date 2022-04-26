@@ -1,0 +1,659 @@
+{
+	"info": {
+		"_postman_id": "7217be69-a280-4fa3-96c3-b1c5d98f552b",
+		"name": "hospital",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "appointment",
+			"item": [
+				{
+					"name": "http://localhost:8090/appointment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "token",
+								"value": "110",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorJobNumber\":\"1231\",\n    \"localDate\": \"2022-04-15\",\n    \"appointmentTime\":\"MORNING\",\n    \"appointmentStatus\":\"CANCEL\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/appointment",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"appointment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/appointment/income",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "startDate",
+									"value": "2022-04-16",
+									"type": "text"
+								},
+								{
+									"key": "endDate",
+									"value": "2022-04-17",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/appointment/income",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"appointment",
+								"income"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/appointment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json, text/plain, */*"
+							},
+							{
+								"key": "Accept-Language",
+								"value": "en,zh-CN;q=0.9,zh;q=0.8"
+							},
+							{
+								"key": "Connection",
+								"value": "keep-alive"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Origin",
+								"value": "http://localhost:8080"
+							},
+							{
+								"key": "Referer",
+								"value": "http://localhost:8080/"
+							},
+							{
+								"key": "Sec-Fetch-Dest",
+								"value": "empty"
+							},
+							{
+								"key": "Sec-Fetch-Mode",
+								"value": "cors"
+							},
+							{
+								"key": "Sec-Fetch-Site",
+								"value": "same-site"
+							},
+							{
+								"key": "User-Agent",
+								"value": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+							},
+							{
+								"key": "sec-ch-ua",
+								"value": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"100\", \"Google Chrome\";v=\"100\""
+							},
+							{
+								"key": "sec-ch-ua-mobile",
+								"value": "?0"
+							},
+							{
+								"key": "sec-ch-ua-platform",
+								"value": "\"macOS\""
+							},
+							{
+								"key": "token",
+								"value": "110"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorJobNumber\": \"1231\",\n    \"localDate\": \"2022-04-24\",\n    \"appointmentTime\": \"MORNING\",\n    \"doctorName\": \"肖欣\",\n    \"doctorIntro\": \" 这是一个好医生\",\n    \"doctorTitle\": \"ORDINARY\",\n    \"sectionName\": \"儿同门诊\",\n    \"registrationFee\": 1.4,\n    \"payTime\": \"2022-04-23T22:51:22\"\n}"
+						},
+						"url": {
+							"raw": "{{hospital-host}}/appointment",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"appointment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/appointment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "token",
+								"value": "110",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "doctorJobNumber",
+									"value": "1231",
+									"type": "text"
+								},
+								{
+									"key": "localdate",
+									"value": "2024-01-13",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/appointment",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"appointment"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/appointment",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "token",
+								"value": "110",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{hospital-host}}/appointment",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"appointment"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "shift schedule",
+			"item": [
+				{
+					"name": "create shift schedule by shift",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"startDate\":\"2022-04-14\",\n    \"endDate\":\"2022-04-14\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift_schedule",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift_schedule"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "shift_schedule/excel_export",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "startDate",
+									"value": "2022-04-26",
+									"type": "text"
+								},
+								{
+									"key": "endDate",
+									"value": "2022-05-01",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift_schedule/excel_export",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift_schedule",
+								"excel_export"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get shift schedule",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "startDate",
+									"value": "2024-01-10",
+									"type": "text"
+								},
+								{
+									"key": "endDate",
+									"value": "2024-01-17",
+									"type": "text"
+								},
+								{
+									"key": "sectionId",
+									"value": "6c332d33-550f-4df6-ba00-3a76d11149fb",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift_schedule/group_by_section",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift_schedule",
+								"group_by_section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update shift_schedule",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"39ffd46d-4665-4dbf-8166-b83954924969\",\n    \"morningAppointmentCount\": 10,\n    \"afternoonAppointmentCount\": 10\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift_schedule",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift_schedule"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "doctor",
+			"item": []
+		},
+		{
+			"name": "registration fee",
+			"item": [
+				{
+					"name": "get registration_fee/all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorTitle\":\"EXPERT\",\n    \"registrationFee\":10.3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/registration_fee/all",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"registration_fee",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "init registration fee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{hospital-host}}/registration_fee/init_registration_fee",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"registration_fee",
+								"init_registration_fee"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "section",
+			"item": [
+				{
+					"name": "http://localhost:8090/section",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "name",
+									"value": "ya",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/section",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"section"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "shift",
+			"item": [
+				{
+					"name": "http://localhost:8090/shift",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorJobNumber\": \"1231\",\n    \"weekMondayMorning\": 3,\n    \"weekMondayAfternoon\": 3,\n    \"weekTuesdayMorning\": 3,\n    \"weekTuesdayAfternoon\": 3,\n    \"weekWednesdayMorning\": 3,\n    \"weekWednesdayAfternoon\": 3,\n    \"weekThursdayMorning\": 3,\n    \"weekThursdayAfternoon\": 3,\n    \"weekFridayMorning\": 3,\n    \"weekFridayAfternoon\": 3,\n    \"weekSaturdayMorning\": 3,\n    \"weekSaturdayAfternoon\": 3,\n    \"weekSundayMorning\": 3,\n    \"weekSundayAfternoon\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/shift/all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "userName",
+									"value": "qijinhao134",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "idNumber",
+									"value": "",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift/all",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/shift",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"doctorJobNumber\": \"1231\",\n    \"weekMondayMorning\": 2,\n    \"weekMondayAfternoon\": 3,\n    \"weekTuesdayMorning\": 3,\n    \"weekTuesdayAfternoon\": 3,\n    \"weekWednesdayMorning\": 3,\n    \"weekWednesdayAfternoon\": 3,\n    \"weekThursdayMorning\": 3,\n    \"weekThursdayAfternoon\": 4,\n    \"weekFridayMorning\": 3,\n    \"weekFridayAfternoon\": 3,\n    \"weekSaturdayMorning\": 3,\n    \"weekSaturdayAfternoon\": 3,\n    \"weekSundayMorning\": 3,\n    \"weekSundayAfternoon\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/shift",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "jobNumber",
+									"value": "1231",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/shift",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"shift"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "http://localhost:8090/user/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "token",
+								"value": "10",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"phoneNumber\":\"130322523\",\n    \"password\":\"twodog\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{hospital-host}}/user/login",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/registValidateCode",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{hospital-host}}/verification_code/create",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"verification_code",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "http://localhost:8090/verification_code/verify",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "verificationCode",
+									"value": "7034",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{hospital-host}}/verification_code/verify",
+							"host": [
+								"{{hospital-host}}"
+							],
+							"path": [
+								"verification_code",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "advice",
+			"item": []
+		}
+	]
+}
