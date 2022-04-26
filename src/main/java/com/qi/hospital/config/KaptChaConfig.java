@@ -8,11 +8,6 @@ import com.google.code.kaptcha.util.Config;
 
 import java.util.Properties;
 
-/*
- * 【Author】 爱吃早餐的程序员
- * 【Time】2020年11月20日 下午4:17:27
- * 【Function】
- */
 @Component
 public class KaptChaConfig {
 

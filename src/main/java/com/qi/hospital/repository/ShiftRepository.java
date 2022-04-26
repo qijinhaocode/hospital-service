@@ -13,8 +13,8 @@ import java.util.Optional;
 @Repository
 public interface ShiftRepository extends JpaRepository<Shift,String>, JpaSpecificationExecutor<Shift> {
     Optional<Shift> findByDoctorJobNumber(String doctorJobNumber);
+
     Optional<Shift> deleteByDoctorJobNumber(String doctorJobNumber);
+
     List<Shift> findByDoctorJobNumberIn(List<String> jobNumbers);
-
-
 }

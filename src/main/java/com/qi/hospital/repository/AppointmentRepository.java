@@ -16,10 +16,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, String
 
     List<Appointment> findByUserIdOrderByPayTimeDesc(String userId);
 
-    List<Appointment> findByLocalDate(LocalDate localDate);
-
     List<Appointment> findByLocalDateInOrderByPayTimeDesc(List<LocalDate> localDates);
-
-
-    List<Appointment> findAllByOrderByPayTimeDesc();
 }

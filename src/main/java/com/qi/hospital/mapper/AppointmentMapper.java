@@ -14,7 +14,6 @@ import java.util.List;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE, builder = @Builder(disableBuilder = true))
 public interface AppointmentMapper {
-
     GetAppointmentResponse toGetResponse(Appointment appointment);
 
     @Mapping(source = "payTime", target = "payTime")
@@ -23,6 +22,5 @@ public interface AppointmentMapper {
     AppointmentResponse toResponse(Appointment appointment);
 
     List<GetAppointmentResponse> toGetResponse(List<Appointment> appointments);
-
 }
 

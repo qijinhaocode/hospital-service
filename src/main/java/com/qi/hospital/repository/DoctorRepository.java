@@ -13,17 +13,9 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor,String>, JpaSpecificationExecutor<Doctor> {
 
-
   Optional<Doctor> findByJobNumber(String jobNumber);
 
   void deleteByJobNumber(String jobNumber);
 
-  List<Doctor> findByJobNumberContaining(String jobNumber);
-
-  List<Doctor> findByNameContaining(String name);
-
-  List<Doctor> findByTitle(DoctorTitle doctorTitle);
-
   List<Doctor> findAll();
-
 }

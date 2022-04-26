@@ -10,7 +10,6 @@ import com.qi.hospital.exception.BusinessException;
 import com.qi.hospital.exception.CommonErrorCode;
 import com.qi.hospital.mapper.ShiftMapper;
 import com.qi.hospital.model.shift.Shift;
-import com.qi.hospital.repository.DoctorRepository;
 import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.util.JpaUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +27,7 @@ import java.util.stream.Collectors;
 public class ShiftService {
     private final ShiftRepository shiftRepository;
     private final ShiftMapper shiftMapper;
-    private final SectionService sectionService;
     private final DoctorService doctorService;
-    private final DoctorRepository doctorRepository;
 
     public Shift createShift(ShiftRequest shiftRequest) {
         Optional<Shift> shift = shiftRepository.findByDoctorJobNumber(shiftRequest.getDoctorJobNumber());
@@ -53,7 +50,7 @@ public class ShiftService {
     @Transactional
     public void updateShift(ShiftUpdateRequest shiftUpdateRequest) {
         Optional<Shift> shiftOptional = shiftRepository.findByDoctorJobNumber(shiftUpdateRequest.getDoctorJobNumber());
-        if (!shiftOptional.isPresent()) {
+        if (shiftOptional.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100109);
         }
         Shift shiftOrigin = shiftOptional.get();

@@ -2,7 +2,6 @@ package com.qi.hospital.service;
 
 import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.metadata.Sheet;
-import com.alibaba.excel.metadata.Table;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.shift.ShiftResponse;
@@ -23,13 +22,11 @@ import com.qi.hospital.util.DateOperationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;

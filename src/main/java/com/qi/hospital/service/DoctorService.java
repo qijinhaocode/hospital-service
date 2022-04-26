@@ -63,7 +63,7 @@ public class DoctorService {
     @Transactional
     public void updateSection(DoctorUpdateRequest doctorUpdateRequest) {
         Optional<Doctor> doctorOriginOptional = doctorRepository.findByJobNumber(doctorUpdateRequest.getJobNumber());
-        if (!doctorOriginOptional.isPresent()) {
+        if (doctorOriginOptional.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100109);
         }
         Doctor doctorOrigin = doctorOriginOptional.get();
@@ -128,13 +128,12 @@ public class DoctorService {
 
     public Map<String, DoctorResponse> getDoctorJobNumberDoctorResponseMap() {
         List<DoctorResponse> doctorResponses = getAllDoctors();
-        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
-        return doctorResponseGroupByJobNumber;
+        return doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
     }
 
     public String getSectionIdByDoctorJobNumber(String doctorJobNumber) {
         Optional<Doctor> doctorOptional = doctorRepository.findByJobNumber(doctorJobNumber);
-        if (!doctorOptional.isPresent()) {
+        if (doctorOptional.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100119);
         }
         return doctorOptional.get().getSectionId();

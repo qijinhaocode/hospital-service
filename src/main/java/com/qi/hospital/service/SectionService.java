@@ -42,7 +42,7 @@ public class SectionService {
     @Transactional
     public void updateSection(SectionUpdateRequest sectionUpdateRequest) {
         Optional<Section> originSection = sectionRepository.findById(sectionUpdateRequest.getId());
-        if (!originSection.isPresent()) {
+        if (originSection.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100104);
         }
         Optional<Section> section = sectionRepository.findById(sectionUpdateRequest.getId());

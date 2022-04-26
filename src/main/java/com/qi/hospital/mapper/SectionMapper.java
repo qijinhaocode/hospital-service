@@ -9,8 +9,6 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE,builder = @Builder(disableBuilder = true))
 public interface SectionMapper {
-
     Section toSection(SectionRequest sectionRequest);
-
 }
 

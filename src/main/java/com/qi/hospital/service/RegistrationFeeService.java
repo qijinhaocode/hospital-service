@@ -2,7 +2,6 @@ package com.qi.hospital.service;
 
 
 import com.qi.hospital.dto.registrationFee.RegistrationFeeUpdateRequest;
-import com.qi.hospital.mapper.RegistrationFeeMapper;
 import com.qi.hospital.model.dcotor.DoctorTitle;
 import com.qi.hospital.model.registrationFee.RegistrationFee;
 import com.qi.hospital.repository.RegistrationFeeRepository;
@@ -18,7 +17,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class RegistrationFeeService {
     private final RegistrationFeeRepository registrationFeeRepository;
-    private final RegistrationFeeMapper registrationFeeMapper;
 
     //初始化挂号费的表
     public void initRegistrationFee() {

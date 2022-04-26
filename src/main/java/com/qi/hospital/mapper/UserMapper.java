@@ -14,7 +14,6 @@ import java.util.List;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE,builder = @Builder(disableBuilder = true))
 public interface UserMapper {
-
     User toUser(UserRequest userRequest);
 
     @Mapping(source = "newPassword", target = "password")
@@ -23,8 +22,5 @@ public interface UserMapper {
     List<UserResponse> toResponses(List<User> users);
 
     UserResponse toResponse(User user);
-
-
-
 }
 

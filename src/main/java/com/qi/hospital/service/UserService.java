@@ -94,7 +94,7 @@ public class UserService {
     }
 
     public void validateUserExist(Optional<User> userOptional) {
-        if (!userOptional.isPresent()) {
+        if (userOptional.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100103);
         }
     }
@@ -118,9 +118,7 @@ public class UserService {
                 if (value != null && value.trim().length() == 0) {
                     throw new BusinessException("字段" + key + " trim之后也不为空字符串");
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (IllegalAccessException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

@@ -38,7 +38,6 @@ public class AppointmentService {
     private final UserRepository userRepository;
     private final AppointmentMapper appointmentMapper;
     private final AppointmentStatus initAppointmentStatus = AppointmentStatus.PROCESSING;
-    private final DoctorService doctorService;
     private final ShiftScheduleService shiftScheduleService;
     private final ShiftScheduleRepository shiftScheduleRepository;
 
@@ -60,13 +59,13 @@ public class AppointmentService {
         //初始化预约状态
         appointment.setAppointmentStatus(initAppointmentStatus);
         // 对应医生可挂号数量 减1
-        if (appointmentRequest.getAppointmentTime().equals(AppointmentTime.MORNING)){
+        if (appointmentRequest.getAppointmentTime().equals(AppointmentTime.MORNING)) {
             Optional<ShiftSchedule> byLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(appointmentRequest.getLocalDate(), appointmentRequest.getDoctorJobNumber());
             shiftScheduleService.updateShiftSchedule(ShiftScheduleUpdateRequest.builder()
                     .id(byLocalDateAndDoctorJobNumber.get().getId())
                     .morningAppointmentCount(byLocalDateAndDoctorJobNumber.get().getMorning() - 1).build());
         }
-        if (appointmentRequest.getAppointmentTime().equals(AppointmentTime.AFTERNOON)){
+        if (appointmentRequest.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
             Optional<ShiftSchedule> byLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(appointmentRequest.getLocalDate(), appointmentRequest.getDoctorJobNumber());
             shiftScheduleService.updateShiftSchedule(ShiftScheduleUpdateRequest.builder()
                     .id(byLocalDateAndDoctorJobNumber.get().getId())

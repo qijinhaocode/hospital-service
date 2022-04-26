@@ -12,9 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE,builder = @Builder(disableBuilder = true))
 public interface AdviceMapper {
-
     @Mapping(target = "createDateTime", source = "createDateTime")
     Advice toDomain(AdviceRequest adviceRequest);
-
 }
 

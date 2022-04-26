@@ -11,12 +11,10 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy =
         NullValuePropertyMappingStrategy.IGNORE,builder = @Builder(disableBuilder = true))
 public interface DoctorMapper {
-
     Doctor toDoctor(DoctorRequest doctorRequest);
 
     Doctor toDoctor(DoctorUpdateRequest doctorRequest);
 
     DoctorResponse toDoctorResponse(Doctor doctor);
-
 }
 
