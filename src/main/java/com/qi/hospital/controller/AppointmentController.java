@@ -70,7 +70,7 @@ public class AppointmentController {
     @ResponseStatus(HttpStatus.OK)
     public AppointmentIncomeResponse getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("startDate") LocalDate startDate,
                                                      @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("endDate") LocalDate endDate,
-                                                     @RequestParam(required = false, defaultValue = "") AppointmentStatus appointmentStatus) {
+                                                     @RequestParam(required = false, defaultValue = "UNKNOWN") AppointmentStatus appointmentStatus) {
         return appointmentService.getIncomeByDate(startDate, endDate, appointmentStatus);
     }
 }

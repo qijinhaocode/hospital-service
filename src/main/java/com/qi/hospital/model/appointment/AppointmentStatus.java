@@ -10,7 +10,8 @@ import lombok.NoArgsConstructor;
 public enum AppointmentStatus {
     PROCESSING("处理中"),
     CANCEL("取消"),
-    DONE("挂号完成");
+    DONE("挂号完成"),
+    UNKNOWN("未知状态");
 
     private String description;
 }

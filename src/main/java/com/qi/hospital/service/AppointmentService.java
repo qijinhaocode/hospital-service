@@ -157,6 +157,21 @@ public class AppointmentService {
 
         autoTransformAppointmentStatusFromProcessToDone(appointmentList);
 
+        //此时会返回所有用户订单，并且统计订单完成的挂号费
+        if (appointmentStatus.equals(AppointmentStatus.UNKNOWN)) {
+            List<GetAppointmentResponse> collect = appointmentList.stream()
+                    .map(appointmentMapper::toGetResponse)
+                    .peek(a -> a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
+                    .collect(Collectors.toList());
+            List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
+            Double income = appointmentsAfter.stream()
+                    .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                    .mapToDouble(Appointment::getRegistrationFee).sum();
+            return AppointmentIncomeResponse.builder()
+                    .appointmentResponses(collect)
+                    .income(income)
+                    .build();
+        }
         // TODO: change DB in loop to userID user Name map
         List<GetAppointmentResponse> collect = appointmentList.stream()
                 .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatus))
