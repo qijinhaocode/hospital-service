@@ -1,6 +1,7 @@
 package com.qi.hospital.repository;
 
 import com.qi.hospital.model.appointment.Appointment;
+import com.qi.hospital.model.appointment.AppointmentStatus;
 import com.qi.hospital.model.shift.ShiftSchedule;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -13,6 +14,8 @@ import java.util.Optional;
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, String>, JpaSpecificationExecutor<Appointment> {
     Optional<Appointment> findByUserIdAndDoctorJobNumberAndLocalDate(String userId, String doctorNumber, LocalDate localDate);
+
+    Optional<Appointment> findByUserIdAndDoctorJobNumberAndLocalDateAndAppointmentStatus(String userId, String doctorNumber, LocalDate localDate, AppointmentStatus appointmentStatus);
 
     List<Appointment> findByUserIdOrderByPayTimeDesc(String userId);
 

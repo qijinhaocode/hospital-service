@@ -49,9 +49,9 @@ public class AppointmentService {
         String userId = userOptional.get().getId();
         appointmentRequest.setUserId(userId);
         //1.在同一自然日，同一医院，同一科室，同一就诊单元，同一就诊人，可以预约最多1个号源；
-        Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDate(userId,
+        Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDateAndAppointmentStatus(userId,
                 appointmentRequest.getDoctorJobNumber(),
-                appointmentRequest.getLocalDate());
+                appointmentRequest.getLocalDate(),AppointmentStatus.PROCESSING);
         if (appointmentOptional.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100117);
         }
@@ -154,14 +154,16 @@ public class AppointmentService {
                 .collect(Collectors.toList());
 
         List<Appointment> appointmentList = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
-        //modify appointment status according by date
+
         autoTransformAppointmentStatusFromProcessToDone(appointmentList);
-        //TODO: change DB in loop to userID user Name map
+
+        // TODO: change DB in loop to userID user Name map
         List<GetAppointmentResponse> collect = appointmentList.stream()
                 .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
                 .map(appointmentMapper::toGetResponse)
                 .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
                 .collect(Collectors.toList());
+
         // find all appointment order which is done and count
         List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Double income = appointmentsAfter.stream()
