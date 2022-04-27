@@ -192,8 +192,11 @@ public class AppointmentService {
                 }
             }
         });
-
-        List<GetAppointmentResponse> collect = appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
+        //TODO: change DB in loop to userID user Name map
+        List<GetAppointmentResponse> collect = appointmentList.stream()
+                .map(appointmentMapper::toGetResponse)
+                .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
+                .collect(Collectors.toList());
         // find all appointment order which is done and count
         List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Double income = appointmentsAfter.stream()
