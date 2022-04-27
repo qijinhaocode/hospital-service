@@ -140,25 +140,7 @@ public class AppointmentService {
         String userId = userOptional.get().getId();
         List<Appointment> appointmentList = appointmentRepository.findByUserIdOrderByPayTimeDesc(userId);
         //modify appointment status according by date
-        appointmentList.forEach(appointment -> {
-            //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
-            if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
-                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
-                    //所有process 的 修改为done
-                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                    appointmentRepository.save(appointment);
-                }
-            }
-            if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
-                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18, 0, 0)))) {
-                    //所有process 的 修改为done
-                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                    appointmentRepository.save(appointment);
-                }
-            }
-        });
+        autoTransformAppointmentStatusFromProcessToDone(appointmentList);
 
         return appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
     }
@@ -173,6 +155,25 @@ public class AppointmentService {
 
         List<Appointment> appointmentList = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         //modify appointment status according by date
+        autoTransformAppointmentStatusFromProcessToDone(appointmentList);
+        //TODO: change DB in loop to userID user Name map
+        List<GetAppointmentResponse> collect = appointmentList.stream()
+                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                .map(appointmentMapper::toGetResponse)
+                .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
+                .collect(Collectors.toList());
+        // find all appointment order which is done and count
+        List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
+        Double income = appointmentsAfter.stream()
+                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                .mapToDouble(Appointment::getRegistrationFee).sum();
+        return AppointmentIncomeResponse.builder()
+                .appointmentResponses(collect)
+                .income(income)
+                .build();
+    }
+
+    private void autoTransformAppointmentStatusFromProcessToDone(List<Appointment> appointmentList) {
         appointmentList.forEach(appointment -> {
             //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
             if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
@@ -192,16 +193,5 @@ public class AppointmentService {
                 }
             }
         });
-        //TODO: change DB in loop to userID user Name map
-        List<GetAppointmentResponse> collect = appointmentList.stream()
-                .map(appointmentMapper::toGetResponse)
-                .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
-                .collect(Collectors.toList());
-        // find all appointment order which is done and count
-        List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
-        Double income = appointmentsAfter.stream()
-                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
-                .mapToDouble(Appointment::getRegistrationFee).sum();
-        return AppointmentIncomeResponse.builder().appointmentResponses(collect).income(income).build();
     }
 }
