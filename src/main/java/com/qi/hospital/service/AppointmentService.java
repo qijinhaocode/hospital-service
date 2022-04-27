@@ -51,7 +51,7 @@ public class AppointmentService {
         //1.在同一自然日，同一医院，同一科室，同一就诊单元，同一就诊人，可以预约最多1个号源；
         Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDateAndAppointmentStatus(userId,
                 appointmentRequest.getDoctorJobNumber(),
-                appointmentRequest.getLocalDate(),AppointmentStatus.PROCESSING);
+                appointmentRequest.getLocalDate(), AppointmentStatus.PROCESSING);
         if (appointmentOptional.isPresent()) {
             throw new BusinessException(CommonErrorCode.E_100117);
         }
@@ -102,7 +102,7 @@ public class AppointmentService {
         String doctorNumber = appointmentUpdateRequest.getDoctorJobNumber();
         LocalDate date = appointmentUpdateRequest.getLocalDate();
         // find the appointment need to update
-        Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDate(userId, doctorNumber, date);
+        Optional<Appointment> appointmentOptional = appointmentRepository.findByUserIdAndDoctorJobNumberAndLocalDateAndAppointmentStatus(userId, doctorNumber, date, AppointmentStatus.PROCESSING);
         Appointment appointment = new Appointment();
         if (appointmentOptional.isPresent()) {
             if (appointmentOptional.get().getAppointmentStatus().equals(AppointmentStatus.DONE)) {
@@ -145,7 +145,7 @@ public class AppointmentService {
         return appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
     }
 
-    public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate, AppointmentStatus appointmentStatu) {
+    public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate, AppointmentStatus appointmentStatus) {
         //日期转星期，遍历这个日期之间所有，生成号表。
         List<String> strings = DateOperationUtil.collectTimeFrame(startDate, endDate);
         List<LocalDate> localDates = strings
@@ -159,15 +159,15 @@ public class AppointmentService {
 
         // TODO: change DB in loop to userID user Name map
         List<GetAppointmentResponse> collect = appointmentList.stream()
-                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatu))
+                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatus))
                 .map(appointmentMapper::toGetResponse)
-                .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
+                .peek(a -> a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
                 .collect(Collectors.toList());
 
         // find all appointment order which is done and count
         List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Double income = appointmentsAfter.stream()
-                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatu))
+                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatus))
                 .mapToDouble(Appointment::getRegistrationFee).sum();
         return AppointmentIncomeResponse.builder()
                 .appointmentResponses(collect)
