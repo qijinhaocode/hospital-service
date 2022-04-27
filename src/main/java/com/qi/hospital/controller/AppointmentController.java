@@ -5,6 +5,7 @@ import com.qi.hospital.dto.appointment.AppointmentRequest;
 import com.qi.hospital.dto.appointment.AppointmentResponse;
 import com.qi.hospital.dto.appointment.AppointmentUpdateRequest;
 import com.qi.hospital.dto.appointment.GetAppointmentResponse;
+import com.qi.hospital.model.appointment.AppointmentStatus;
 import com.qi.hospital.service.AppointmentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,7 +69,8 @@ public class AppointmentController {
     @GetMapping("income")
     @ResponseStatus(HttpStatus.OK)
     public AppointmentIncomeResponse getIncomeByDate(@NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("startDate") LocalDate startDate,
-                                                     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("endDate") LocalDate endDate) {
-        return appointmentService.getIncomeByDate(startDate, endDate);
+                                                     @NotNull @DateTimeFormat(pattern = "yyyy-MM-dd") @RequestParam("endDate") LocalDate endDate,
+                                                     @RequestParam(required = false, defaultValue = "") AppointmentStatus appointmentStatus) {
+        return appointmentService.getIncomeByDate(startDate, endDate, appointmentStatus);
     }
 }

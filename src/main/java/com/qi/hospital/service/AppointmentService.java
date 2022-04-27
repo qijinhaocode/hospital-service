@@ -145,7 +145,7 @@ public class AppointmentService {
         return appointmentList.stream().map(appointmentMapper::toGetResponse).collect(Collectors.toList());
     }
 
-    public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate) {
+    public AppointmentIncomeResponse getIncomeByDate(LocalDate startDate, LocalDate endDate, AppointmentStatus appointmentStatu) {
         //日期转星期，遍历这个日期之间所有，生成号表。
         List<String> strings = DateOperationUtil.collectTimeFrame(startDate, endDate);
         List<LocalDate> localDates = strings
@@ -159,7 +159,7 @@ public class AppointmentService {
 
         // TODO: change DB in loop to userID user Name map
         List<GetAppointmentResponse> collect = appointmentList.stream()
-                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatu))
                 .map(appointmentMapper::toGetResponse)
                 .peek(a->a.setUserName(userRepository.findById(a.getUserId()).get().getUserName()))
                 .collect(Collectors.toList());
@@ -167,7 +167,7 @@ public class AppointmentService {
         // find all appointment order which is done and count
         List<Appointment> appointmentsAfter = appointmentRepository.findByLocalDateInOrderByPayTimeDesc(localDates);
         Double income = appointmentsAfter.stream()
-                .filter(appointment -> appointment.getAppointmentStatus().equals(AppointmentStatus.DONE))
+                .filter(appointment -> appointment.getAppointmentStatus().equals(appointmentStatu))
                 .mapToDouble(Appointment::getRegistrationFee).sum();
         return AppointmentIncomeResponse.builder()
                 .appointmentResponses(collect)
