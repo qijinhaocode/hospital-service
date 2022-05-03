@@ -15,6 +15,7 @@ import com.qi.hospital.model.appointment.AppointmentTime;
 import com.qi.hospital.model.section.Section;
 import com.qi.hospital.model.shift.Shift;
 import com.qi.hospital.model.shift.ShiftSchedule;
+import com.qi.hospital.repository.AppointmentRepository;
 import com.qi.hospital.repository.SectionRepository;
 import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.repository.ShiftScheduleRepository;
@@ -46,6 +47,7 @@ public class ShiftScheduleService {
     private final DoctorService doctorService;
     private final ShiftScheduleMapper shiftScheduleMapper;
     private final SectionRepository sectionRepository;
+    private final AppointmentRepository appointmentRepository;
 
     //create ShiftSchedule by start date and end date (generate)
     //同一日期只能，只能生成一次号表
@@ -292,6 +294,10 @@ public class ShiftScheduleService {
     public void deleteShiftSchedule(String id) {
         Optional<ShiftSchedule> shiftScheduleOptional = shiftScheduleRepository.findById(id);
         if (shiftScheduleOptional.isPresent()) {
+            //已经在此号表上挂过的订单后，此号表记录不可删除。
+            ShiftSchedule ss = shiftScheduleOptional.get();
+            if (appointmentRepository.findByDoctorJobNumberAndLocalDate(ss.getDoctorJobNumber(), ss.getLocalDate()).size() > 0)
+                throw new BusinessException(CommonErrorCode.E_100121);
             shiftScheduleRepository.deleteById(id);
             return;
         }
