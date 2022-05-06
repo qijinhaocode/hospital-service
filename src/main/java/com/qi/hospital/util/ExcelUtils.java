@@ -19,7 +19,8 @@ public class ExcelUtils {
         try {
             ServletOutputStream outputStream = getOutputStream(fileName, response);
             ExcelWriterBuilder writeBook = EasyExcel.write(outputStream, head);
-            ExcelWriterSheetBuilder sheet = writeBook.sheet(fileName);
+            ExcelWriterBuilder excelWriterBuilder = writeBook.head(head).registerWriteHandler(new CustomCellWriteHandler());
+            ExcelWriterSheetBuilder sheet = excelWriterBuilder.sheet(fileName);
             sheet.doWrite(list);
         } catch (Exception e) {
             log.error("导出excel表格失败:", e);
