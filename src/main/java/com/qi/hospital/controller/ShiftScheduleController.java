@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.io.FileNotFoundException;
 import java.util.List;
 
 
@@ -68,10 +68,11 @@ public class ShiftScheduleController {
     public void updateShiftSchedule(@Valid @RequestBody ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
         shiftScheduleService.updateShiftSchedule(shiftScheduleUpdateRequest);
     }
+
     // 删除号表
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteShiftSchedule( @PathVariable String id){
+    public void deleteShiftSchedule(@PathVariable String id) {
         shiftScheduleService.deleteShiftSchedule(id);
     }
 
@@ -79,7 +80,8 @@ public class ShiftScheduleController {
     @PostMapping("/excel_export")
     @ResponseStatus(HttpStatus.OK)
     public void exportShiftScheduleExcelAccordingDateFrame(@NotNull @RequestParam(value = "startDate") String startDate,
-                                                           @NotNull @RequestParam(value = "endDate") String endDate) {
-        shiftScheduleService.createShiftScheduleExcelAccordingDateFrame(startDate,endDate);
+                                                           @NotNull @RequestParam(value = "endDate") String endDate,
+                                                           HttpServletResponse response) {
+        shiftScheduleService.createShiftScheduleExcelAccordingDateFrame(startDate, endDate, response);
     }
 }

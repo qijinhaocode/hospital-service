@@ -1,8 +1,5 @@
 package com.qi.hospital.service;
 
-import com.alibaba.excel.ExcelWriter;
-import com.alibaba.excel.metadata.Sheet;
-import com.alibaba.excel.support.ExcelTypeEnum;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
@@ -20,12 +17,12 @@ import com.qi.hospital.repository.SectionRepository;
 import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.repository.ShiftScheduleRepository;
 import com.qi.hospital.util.DateOperationUtil;
+import com.qi.hospital.util.ExcelUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -34,11 +31,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Log4j
 public class ShiftScheduleService {
 
     private final ShiftRepository shiftRepository;
@@ -304,21 +303,17 @@ public class ShiftScheduleService {
         throw new BusinessException(CommonErrorCode.E_100120);
     }
 
-    public void createShiftScheduleExcelAccordingDateFrame(String startDate, String endDate) {
+    public void createShiftScheduleExcelAccordingDateFrame(String startDate, String endDate, HttpServletResponse response) {
         List<ShiftScheduleResponse> shiftScheduleResponses = getShiftScheduleByConditionGroupBySectionId(startDate, endDate).stream()
                 .flatMap(Collection::stream)
                 .flatMap(Collection::stream)
                 .peek(s -> s.setDoctorTitleDescription(s.getDoctorTitle().getDescription()))
                 .collect(Collectors.toList());
-
-        try (OutputStream out = new FileOutputStream(startDate.toString() + "至"+ endDate.toString()+"号表.xlsx")) {
-            ExcelWriter writer = new ExcelWriter(out, ExcelTypeEnum.XLSX);
-            Sheet shiftScheduleSheet = new Sheet(1, 0, ShiftScheduleResponse.class);
-            shiftScheduleSheet.setSheetName("号表页");
-            writer.write(shiftScheduleResponses, shiftScheduleSheet);
-            writer.finish();
-        } catch (IOException e) {
-            e.printStackTrace();
+        CopyOnWriteArrayList<ShiftScheduleResponse> shiftScheduleResponsesCopy = new CopyOnWriteArrayList<>(shiftScheduleResponses);
+        try {
+            ExcelUtils.writeExcel(startDate + "至" + endDate + "号表.xlsx", ShiftScheduleResponse.class, response, shiftScheduleResponsesCopy);
+        } catch (Exception e) {
+            log.error("导出excel表格失败:", e);
         }
     }
 }

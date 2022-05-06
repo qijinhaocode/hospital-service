@@ -1,22 +1,28 @@
 package com.qi.hospital.dto.shift;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.alibaba.excel.metadata.BaseRowModel;
+import com.alibaba.excel.converters.date.DateDateConverter;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qi.hospital.model.dcotor.DoctorTitle;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Data
-public class ShiftScheduleResponse extends BaseRowModel {
+public class ShiftScheduleResponse {
     private String id;
-    @ExcelProperty(value = "日期", index = 0)
+
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @ExcelIgnore
     private LocalDate localDate;
     @ExcelProperty(value = "科室", index = 1)
     private String sectionName;
     @ExcelProperty(value = "医生姓名", index = 2)
     private String doctorName;
-
+    @ExcelIgnore
     private DoctorTitle doctorTitle;
     @ExcelProperty(value = "挂号费", index = 4)
     private Double registrationFee;
