@@ -18,18 +18,27 @@ import java.util.stream.Collectors;
 public class RegistrationFeeService {
     private final RegistrationFeeRepository registrationFeeRepository;
 
-    //初始化挂号费的表
-    public void initRegistrationFee() {
+    @Transactional
+    public List<RegistrationFee> getALlRegistrationFee() {
+        initRegistrationFeeTable();
+        return registrationFeeRepository.findAll();
+    }
+
+    public void updateRegistrationFee(RegistrationFeeUpdateRequest updateRegistrationFeeRequest) {
+        registrationFeeRepository.save(RegistrationFee
+                .builder()
+                .doctorTitle(updateRegistrationFeeRequest.getDoctorTitle())
+                .registrationFee(updateRegistrationFeeRequest.getRegistrationFee()).build());
+    }
+
+    //初始化挂号费的表,把所有没有在表里面的DoctorTitle 存到表里
+    private void initRegistrationFeeTable() {
         List<DoctorTitle> allDoctorTitles = List.of(DoctorTitle.values());
-        //get all doctorTitle from db
         Set<DoctorTitle> allRegistrationFeeDoctorTitle = getAllRegistrationFeeDoctorTitle();
-        allDoctorTitles.forEach(doctorTitle -> {
-            if (!allRegistrationFeeDoctorTitle.contains(doctorTitle)) {
-                registrationFeeRepository.save(RegistrationFee
-                        .builder()
-                        .doctorTitle(doctorTitle).build());
-            }
-        });
+        allDoctorTitles.stream()
+                .filter(doctorTitle -> !allRegistrationFeeDoctorTitle.contains(doctorTitle))
+                .map(doctorTitle -> RegistrationFee.builder().doctorTitle(doctorTitle).build())
+                .forEach(registrationFeeRepository::save);
     }
 
     private Set<DoctorTitle> getAllRegistrationFeeDoctorTitle() {
@@ -38,18 +47,4 @@ public class RegistrationFeeService {
                 .map(RegistrationFee::getDoctorTitle)
                 .collect(Collectors.toSet());
     }
-
-    public void updateRegistrationFee(RegistrationFeeUpdateRequest updateRegistrationFeeRequest){
-        registrationFeeRepository.save(RegistrationFee
-                .builder()
-                .doctorTitle(updateRegistrationFeeRequest.getDoctorTitle())
-                .registrationFee(updateRegistrationFeeRequest.getRegistrationFee()).build());
-    }
-
-    @Transactional
-    public List<RegistrationFee> getALlRegistrationFee(){
-        initRegistrationFee();
-        return registrationFeeRepository.findAll();
-    }
-
 }
