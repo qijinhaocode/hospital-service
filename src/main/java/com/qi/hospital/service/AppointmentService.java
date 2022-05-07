@@ -191,24 +191,24 @@ public class AppointmentService {
     }
 
     private void autoTransformAppointmentStatusFromProcessToDone(List<Appointment> appointmentList) {
-        appointmentList.forEach(appointment -> {
-            //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
-            if (appointment.getAppointmentTime().equals(AppointmentTime.MORNING)) {
-                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0)))) {
-                    //所有process 的 修改为done
-                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                    appointmentRepository.save(appointment);
-                }
-            }
-            if (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON)) {
-                if (LocalDateTime.now().isAfter(LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18, 0, 0)))) {
-                    //所有process 的 修改为done
-                    if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
-                        appointment.setAppointmentStatus(AppointmentStatus.DONE);
-                    appointmentRepository.save(appointment);
-                }
-            }
-        });
+        //对比现在的时间 1. 早上的号， 中午十二点后就改成done， 下午的号 晚上 6点后就改成 done
+        appointmentList.stream().filter(this::isNowAfterAppointmentTimeDeadline).forEach(this::changeAppointmentStatusFromProcessingToDone);
+    }
+
+    private boolean isNowAfterAppointmentTimeDeadline(Appointment appointment) {
+        return appointment.getAppointmentTime().equals(AppointmentTime.MORNING) && LocalDateTime.now().isAfter(getEveryDayAppointmentDeadline(appointment, AppointmentTime.MORNING)) ||
+                (appointment.getAppointmentTime().equals(AppointmentTime.AFTERNOON) && LocalDateTime.now().isAfter(getEveryDayAppointmentDeadline(appointment, AppointmentTime.AFTERNOON)));
+    }
+
+    private LocalDateTime getEveryDayAppointmentDeadline(Appointment appointment, AppointmentTime appointmentTime) {
+        if (appointmentTime.equals(AppointmentTime.MORNING))
+            return LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(12, 0, 0));
+        else return LocalDateTime.of(appointment.getLocalDate(), LocalTime.of(18, 0, 0));
+    }
+
+    private void changeAppointmentStatusFromProcessingToDone(Appointment appointment) {
+        if (appointment.getAppointmentStatus().equals(AppointmentStatus.PROCESSING))
+            appointment.setAppointmentStatus(AppointmentStatus.DONE);
+        appointmentRepository.save(appointment);
     }
 }
