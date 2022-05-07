@@ -65,8 +65,8 @@ public class ShiftScheduleController {
     //修改表号
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public void updateShiftSchedule(@Valid @RequestBody ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
-        shiftScheduleService.updateShiftSchedule(shiftScheduleUpdateRequest);
+    public ShiftScheduleResponse updateShiftSchedule(@Valid @RequestBody ShiftScheduleUpdateRequest shiftScheduleUpdateRequest) {
+        return shiftScheduleService.updateShiftSchedule(shiftScheduleUpdateRequest);
     }
 
     // 删除号表

@@ -1,6 +1,7 @@
 package com.qi.hospital.service;
 
 import com.qi.hospital.dto.doctor.DoctorResponse;
+import com.qi.hospital.dto.shift.AppointmentNumberCount;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
@@ -56,7 +57,7 @@ public class ShiftScheduleService {
         List<String> strings = DateOperationUtil.collectTimeFrame(shiftScheduleRequest.getStartDate(), shiftScheduleRequest.getEndDate());
         List<LocalDate> localDates = strings
                 .stream()
-                .map(string -> DateOperationUtil.String2LocalDate(string))
+                .map(DateOperationUtil::String2LocalDate)
                 .collect(Collectors.toList());
         List<ShiftSchedule> shiftSchedules = new LinkedList<>();
 
@@ -78,30 +79,16 @@ public class ShiftScheduleService {
 
         allDoctorsShifts.forEach(doctorsShift -> localDates.forEach(localDate -> {
             if (localDate.isAfter(LocalDate.now())) {
-                Optional<ShiftSchedule> byLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(localDate, doctorsShift.getDoctorJobNumber());
+                Optional<ShiftSchedule> shiftScheduleByLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(localDate, doctorsShift.getDoctorJobNumber());
                 //如果按照日期存在就替换
-                if (byLocalDateAndDoctorJobNumber.isPresent()) {
-                    // 最新逻辑，如果号表存在数据库就什么都不做
-//                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
-//                    ShiftSchedule build = ShiftSchedule.builder()
-//                            .id(byLocalDateAndDoctorJobNumber.get().getId())
-//                            .doctorJobNumber(doctorsShift.getDoctorJobNumber())
-//                            .localDate(localDate)
-//                            .morning(morningAndAfternoonReservationNumberFromDate[0])
-//                            .afternoon(morningAndAfternoonReservationNumberFromDate[1]).build();
-//                    if (isShiftScheduleVisible(build.getMorning(), build.getAfternoon())) {
-//                        shiftSchedules.add(build);
-//                    }
-//                    shiftScheduleRepository.save(build);
-                    //不存在就直接创建
-                } else {
-                    Integer[] morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonReservationNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                if (shiftScheduleByLocalDateAndDoctorJobNumber.isEmpty()) {
+                    AppointmentNumberCount morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonAppointmentNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
                     DoctorResponse doctorResponseFromMap = doctorResponseGroupByJobNumber.get(doctorsShift.getDoctorJobNumber());
                     ShiftSchedule buildShiftSchedule = ShiftSchedule.builder()
                             .doctorJobNumber(doctorsShift.getDoctorJobNumber())
                             .localDate(localDate)
-                            .morning(morningAndAfternoonReservationNumberFromDate[0])
-                            .afternoon(morningAndAfternoonReservationNumberFromDate[1])
+                            .morning(morningAndAfternoonReservationNumberFromDate.getMorningAppointmentNumber())
+                            .afternoon(morningAndAfternoonReservationNumberFromDate.getAfternoonAppointmentNumber())
                             .doctorIntro(doctorResponseFromMap.getIntro())
                             .doctorName(doctorResponseFromMap.getName())
                             .doctorTitle(doctorResponseFromMap.getTitle())
@@ -227,43 +214,43 @@ public class ShiftScheduleService {
     }
 
     // from date to get Morning and Afternoon
-    private Integer[] getMorningAndAfternoonReservationNumberFromDate(LocalDate localDate, String jobNumber) {
-        Integer[] shift = new Integer[2];
+    private AppointmentNumberCount getMorningAndAfternoonAppointmentNumberFromDate(LocalDate localDate, String jobNumber) {
+        AppointmentNumberCount appointmentNumberCount = new AppointmentNumberCount();
         DayOfWeek dayOfWeek = localDate.getDayOfWeek();
         Optional<Shift> byDoctorJobNumber = shiftRepository.findByDoctorJobNumber(jobNumber);
-        if (!byDoctorJobNumber.isPresent()) {
+        if (byDoctorJobNumber.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100114);
         }
         if (dayOfWeek.equals(DayOfWeek.MONDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekMondayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekMondayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekMondayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekMondayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.TUESDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekTuesdayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekTuesdayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekTuesdayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekTuesdayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.WEDNESDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekWednesdayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekWednesdayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekWednesdayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekWednesdayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.THURSDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekThursdayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekThursdayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekThursdayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekThursdayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.FRIDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekFridayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekFridayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekFridayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekFridayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.SATURDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekSaturdayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekSaturdayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekSaturdayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekSaturdayAfternoon());
         }
         if (dayOfWeek.equals(DayOfWeek.SUNDAY)) {
-            shift[0] = byDoctorJobNumber.get().getWeekSundayMorning();
-            shift[1] = byDoctorJobNumber.get().getWeekSundayAfternoon();
+            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekSundayMorning());
+            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekSundayAfternoon());
         }
 
-        return shift;
+        return appointmentNumberCount;
     }
 
     // update shift schedule
