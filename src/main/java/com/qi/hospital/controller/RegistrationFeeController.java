@@ -43,6 +43,6 @@ public class RegistrationFeeController {
     @PostMapping(value = "init_registration_fee")
     @ResponseStatus(HttpStatus.OK)
     public void initRegistrationFee() {
-        registrationFeeService.initRegistrationFee();
+        registrationFeeService.initRegistrationFeeTable();
     }
 }

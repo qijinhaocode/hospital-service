@@ -32,7 +32,7 @@ public class RegistrationFeeService {
     }
 
     //初始化挂号费的表,把所有没有在表里面的DoctorTitle 存到表里
-    private void initRegistrationFeeTable() {
+    public void initRegistrationFeeTable() {
         List<DoctorTitle> allDoctorTitles = List.of(DoctorTitle.values());
         Set<DoctorTitle> allRegistrationFeeDoctorTitle = getAllRegistrationFeeDoctorTitle();
         allDoctorTitles.stream()
