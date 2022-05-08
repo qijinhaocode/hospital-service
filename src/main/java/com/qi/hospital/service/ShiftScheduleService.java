@@ -19,11 +19,14 @@ import com.qi.hospital.repository.ShiftRepository;
 import com.qi.hospital.repository.ShiftScheduleRepository;
 import com.qi.hospital.util.DateOperationUtil;
 import com.qi.hospital.util.ExcelUtils;
+import com.qi.hospital.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Collection;
@@ -82,7 +85,16 @@ public class ShiftScheduleService {
                 Optional<ShiftSchedule> shiftScheduleByLocalDateAndDoctorJobNumber = shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(localDate, doctorsShift.getDoctorJobNumber());
                 //如果按照日期存在就替换
                 if (shiftScheduleByLocalDateAndDoctorJobNumber.isEmpty()) {
-                    AppointmentNumberCount morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonAppointmentNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                    AppointmentNumberCount morningAndAfternoonReservationNumberFromDate = null;
+                    try {
+                        morningAndAfternoonReservationNumberFromDate = getMorningAndAfternoonAppointmentNumberFromDate(localDate, doctorsShift.getDoctorJobNumber());
+                    } catch (NoSuchMethodException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
                     DoctorResponse doctorResponseFromMap = doctorResponseGroupByJobNumber.get(doctorsShift.getDoctorJobNumber());
                     ShiftSchedule buildShiftSchedule = ShiftSchedule.builder()
                             .doctorJobNumber(doctorsShift.getDoctorJobNumber())
@@ -172,8 +184,6 @@ public class ShiftScheduleService {
                                 list.add(collect1);
                             }
                         });
-
-
                     } else {
                         collect = shiftSchedules.stream()
                                 .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
@@ -214,42 +224,17 @@ public class ShiftScheduleService {
     }
 
     // from date to get Morning and Afternoon
-    private AppointmentNumberCount getMorningAndAfternoonAppointmentNumberFromDate(LocalDate localDate, String jobNumber) {
+    public AppointmentNumberCount getMorningAndAfternoonAppointmentNumberFromDate(LocalDate localDate, String jobNumber) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         AppointmentNumberCount appointmentNumberCount = new AppointmentNumberCount();
         DayOfWeek dayOfWeek = localDate.getDayOfWeek();
         Optional<Shift> byDoctorJobNumber = shiftRepository.findByDoctorJobNumber(jobNumber);
         if (byDoctorJobNumber.isEmpty()) {
             throw new BusinessException(CommonErrorCode.E_100114);
         }
-        if (dayOfWeek.equals(DayOfWeek.MONDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekMondayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekMondayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.TUESDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekTuesdayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekTuesdayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.WEDNESDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekWednesdayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekWednesdayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.THURSDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekThursdayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekThursdayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.FRIDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekFridayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekFridayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.SATURDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekSaturdayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekSaturdayAfternoon());
-        }
-        if (dayOfWeek.equals(DayOfWeek.SUNDAY)) {
-            appointmentNumberCount.setMorningAppointmentNumber(byDoctorJobNumber.get().getWeekSundayMorning());
-            appointmentNumberCount.setAfternoonAppointmentNumber(byDoctorJobNumber.get().getWeekSundayAfternoon());
-        }
-
+        Method methodGetMorning = byDoctorJobNumber.get().getClass().getMethod("getWeek" + StringUtils.uppercase(dayOfWeek.toString()) + "Morning");
+        Method methodGetAfternoon = byDoctorJobNumber.get().getClass().getMethod("getWeek" + StringUtils.uppercase(dayOfWeek.toString()) + "Afternoon");
+        appointmentNumberCount.setMorningAppointmentNumber((Integer) methodGetMorning.invoke(byDoctorJobNumber.get()));
+        appointmentNumberCount.setAfternoonAppointmentNumber((Integer) methodGetAfternoon.invoke(byDoctorJobNumber.get()));
         return appointmentNumberCount;
     }
 
