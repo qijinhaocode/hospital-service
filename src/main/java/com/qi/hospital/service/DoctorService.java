@@ -69,7 +69,7 @@ public class DoctorService {
         Doctor doctorOrigin = doctorOriginOptional.get();
         Doctor doctorSrc = doctorMapper.toDoctor(doctorUpdateRequest);
         JpaUtil.copyNotNullProperties(doctorSrc, doctorOrigin);
-        //如果这个医生已经有预约挂号信息在process 中，则不能修改其title 和 科室
+        // 如果这个医生已经有预约挂号信息在process 中，则不能修改其 职称 和 科室
         doctorRepository.save(doctorOrigin);
     }
 
@@ -77,16 +77,19 @@ public class DoctorService {
         List<Section> sections = sectionService.getAllSection();
         Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
         List<Doctor> doctors = doctorRepository.findAll();
-        List<RegistrationFee> allRegistrationFee = registrationFeeRepository.findAll();
-        Map<DoctorTitle, RegistrationFee> doctorTitleRegistrationFeeMap = allRegistrationFee
-                .stream()
-                .collect(Collectors.toMap(RegistrationFee::getDoctorTitle, Function.identity()));
         return doctors.stream().map(doctor -> {
             DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
             doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));
-            doctorResponse.setRegistrationFee(doctorTitleRegistrationFeeMap.get(doctor.getTitle()).getRegistrationFee());
+            doctorResponse.setRegistrationFee(getDoctorTitleRegistrationFeeMap().get(doctor.getTitle()).getRegistrationFee());
             return doctorResponse;
         }).collect(Collectors.toList());
+    }
+
+    private Map<DoctorTitle, RegistrationFee> getDoctorTitleRegistrationFeeMap() {
+        List<RegistrationFee> allRegistrationFee = registrationFeeRepository.findAll();
+        return allRegistrationFee
+                .stream()
+                .collect(Collectors.toMap(RegistrationFee::getDoctorTitle, Function.identity()));
     }
 
     public List<DoctorResponse> getDoctorsByCondition(DoctorQueryCriteria doctorQueryCriteria) {
@@ -113,15 +116,12 @@ public class DoctorService {
         List<Doctor> doctors = doctorRepository.findAll(specification, Sort.by(Sort.Direction.ASC, "jobNumber"));
         List<Section> sections = sectionService.getAllSection();
         Map<String, Section> sectionGroupById = sections.stream().collect(Collectors.toMap(Section::getId, Function.identity()));
-        //get registration fee map
-        List<RegistrationFee> allRegistrationFee = registrationFeeRepository.findAll();
-        Map<DoctorTitle, RegistrationFee> doctorTitleRegistrationFeeMap = allRegistrationFee.stream().collect(Collectors.toMap(RegistrationFee::getDoctorTitle, Function.identity()));
 
         return doctors.stream().map(doctor -> {
             DoctorResponse doctorResponse = doctorMapper.toDoctorResponse(doctor);
             doctorResponse.setSection(sectionGroupById.get(doctor.getSectionId()));
             //todo Nullpointexception deal
-            doctorResponse.setRegistrationFee(doctorTitleRegistrationFeeMap.get(doctor.getTitle()).getRegistrationFee());
+            doctorResponse.setRegistrationFee(getDoctorTitleRegistrationFeeMap().get(doctor.getTitle()).getRegistrationFee());
             return doctorResponse;
         }).collect(Collectors.toList());
     }
@@ -129,13 +129,5 @@ public class DoctorService {
     public Map<String, DoctorResponse> getDoctorJobNumberDoctorResponseMap() {
         List<DoctorResponse> doctorResponses = getAllDoctors();
         return doctorResponses.stream().collect(Collectors.toMap(DoctorResponse::getJobNumber, Function.identity()));
-    }
-
-    public String getSectionIdByDoctorJobNumber(String doctorJobNumber) {
-        Optional<Doctor> doctorOptional = doctorRepository.findByJobNumber(doctorJobNumber);
-        if (doctorOptional.isEmpty()) {
-            throw new BusinessException(CommonErrorCode.E_100119);
-        }
-        return doctorOptional.get().getSectionId();
     }
 }
