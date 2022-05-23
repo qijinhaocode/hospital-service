@@ -1,5 +1,6 @@
 package com.qi.hospital.controller;
 
+import com.qi.hospital.dto.shift.ManuallyCreateShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleUpdateRequest;
@@ -83,5 +84,11 @@ public class ShiftScheduleController {
                                                            @NotNull @RequestParam(value = "endDate") String endDate,
                                                            HttpServletResponse response) {
         shiftScheduleService.createShiftScheduleExcelAccordingDateFrame(startDate, endDate, response);
+    }
+
+    @PostMapping("manually_create")
+    @ResponseStatus(HttpStatus.CREATED)
+    public List<ShiftScheduleResponse> manuallyCreateShiftSchedule(@Valid @RequestBody ManuallyCreateShiftScheduleRequest manuallyCreateShiftScheduleRequest){
+        return shiftScheduleService.manuallyCreateShiftSchedule(manuallyCreateShiftScheduleRequest);
     }
 }

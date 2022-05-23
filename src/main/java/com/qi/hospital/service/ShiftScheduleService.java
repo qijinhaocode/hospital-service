@@ -1,7 +1,9 @@
 package com.qi.hospital.service;
 
+import com.qi.hospital.dto.doctor.DoctorQueryCriteria;
 import com.qi.hospital.dto.doctor.DoctorResponse;
 import com.qi.hospital.dto.shift.AppointmentNumberCount;
+import com.qi.hospital.dto.shift.ManuallyCreateShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftResponse;
 import com.qi.hospital.dto.shift.ShiftScheduleRequest;
 import com.qi.hospital.dto.shift.ShiftScheduleResponse;
@@ -57,11 +59,7 @@ public class ShiftScheduleService {
     public List<ShiftScheduleResponse> createShiftSchedule(ShiftScheduleRequest shiftScheduleRequest) {
 
         //日期转星期，遍历这个日期之间所有，生成号表。
-        List<String> strings = DateOperationUtil.collectTimeFrame(shiftScheduleRequest.getStartDate(), shiftScheduleRequest.getEndDate());
-        List<LocalDate> localDates = strings
-                .stream()
-                .map(DateOperationUtil::String2LocalDate)
-                .collect(Collectors.toList());
+        List<LocalDate> localDates = getLocalDates(shiftScheduleRequest);
         List<ShiftSchedule> shiftSchedules = new LinkedList<>();
 
         //get all Shift
@@ -118,6 +116,15 @@ public class ShiftScheduleService {
         return shiftScheduleMapper.toResponses(shiftSchedules);
     }
 
+    private List<LocalDate> getLocalDates(ShiftScheduleRequest shiftScheduleRequest) {
+        List<String> strings = DateOperationUtil.collectTimeFrame(shiftScheduleRequest.getStartDate(), shiftScheduleRequest.getEndDate());
+        List<LocalDate> localDates = strings
+                .stream()
+                .map(DateOperationUtil::String2LocalDate)
+                .collect(Collectors.toList());
+        return localDates;
+    }
+
     private boolean isShiftScheduleVisible(Integer morning, Integer afternoon) {
         return morning != null || afternoon != null;
     }
@@ -140,7 +147,7 @@ public class ShiftScheduleService {
         Map<String, DoctorResponse> doctorResponseGroupByJobNumber = getJobNumberDoctorResponseMap();
 
         List<ShiftSchedule> shiftSchedules = shiftScheduleRepository.findByLocalDateInOrderByLocalDate(localDates);
-        List<ShiftScheduleResponse> collect = new LinkedList<>();
+        List<ShiftScheduleResponse> collect;
         if (sectionName != null) {
             collect = shiftSchedules.stream()
                     .filter(shiftSchedule -> isShiftScheduleVisible(shiftSchedule.getMorning(), shiftSchedule.getAfternoon()))
@@ -202,7 +209,6 @@ public class ShiftScheduleService {
                     if (list.size() != 0) {
                         resultList.add(list);
                     }
-
                 }
         );
         return resultList;
@@ -287,5 +293,53 @@ public class ShiftScheduleService {
         } catch (Exception e) {
             log.error("导出excel表格失败:", e);
         }
+    }
+
+    /**
+     * 方法：手动 添加号表信息
+     * 参数：
+     * startDate
+     * endDate
+     * doctorJobNumber
+     * morningCount
+     * afternoonCount
+     * 如果已经存在了当日的医生的号表，那么就抛异常
+     */
+
+    public List<ShiftScheduleResponse> manuallyCreateShiftSchedule(ManuallyCreateShiftScheduleRequest manuallyCreateShiftScheduleRequest){
+        if (manuallyCreateShiftScheduleRequest.getMorning()== null && manuallyCreateShiftScheduleRequest.getAfternoon()==null){
+            throw new BusinessException(CommonErrorCode.E_100122);
+        }
+        List<DoctorResponse> doctorsByDoctorNumber = doctorService.getDoctorsByCondition(DoctorQueryCriteria.builder().jobNumber(manuallyCreateShiftScheduleRequest.getDoctorJobNumber()).build());
+        if (doctorsByDoctorNumber.isEmpty()){
+            throw new BusinessException(CommonErrorCode.E_100109);
+        }
+        List<LocalDate> localDates = getLocalDates(ShiftScheduleRequest.builder()
+                .startDate(manuallyCreateShiftScheduleRequest.getStartDate())
+                .endDate(manuallyCreateShiftScheduleRequest.getEndDate())
+                .build());
+        Map<String, DoctorResponse> doctorResponseGroupByJobNumber = getJobNumberDoctorResponseMap();
+        DoctorResponse doctorResponseFromMap = doctorResponseGroupByJobNumber.get(manuallyCreateShiftScheduleRequest.getDoctorJobNumber());
+        List<ShiftSchedule> shiftSchedules = new LinkedList<>();
+        localDates.stream()
+                .filter(date->shiftScheduleRepository.findByLocalDateAndDoctorJobNumber(date, manuallyCreateShiftScheduleRequest.getDoctorJobNumber()).isEmpty())
+                .forEach(date->{
+                    ShiftSchedule buildShiftSchedule = ShiftSchedule.builder()
+                            .doctorJobNumber(manuallyCreateShiftScheduleRequest.getDoctorJobNumber())
+                            .localDate(date)
+                            .morning(manuallyCreateShiftScheduleRequest.getMorning())
+                            .afternoon(manuallyCreateShiftScheduleRequest.getAfternoon())
+                            .doctorIntro(doctorResponseFromMap.getIntro())
+                            .doctorName(doctorResponseFromMap.getName())
+                            .doctorTitle(doctorResponseFromMap.getTitle())
+                            .sectionName(doctorResponseFromMap.getSection().getName())
+                            .registrationFee(doctorResponseFromMap.getRegistrationFee())
+                            .build();
+                    if (isShiftScheduleVisible(buildShiftSchedule.getMorning(), buildShiftSchedule.getAfternoon())) {
+                        shiftSchedules.add(buildShiftSchedule);
+                    }
+                    shiftScheduleRepository.save(buildShiftSchedule);
+                });
+        return shiftScheduleMapper.toResponses(shiftSchedules);
     }
 }
