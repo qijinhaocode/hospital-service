@@ -41,6 +41,7 @@ public class AppointmentService {
     private final ShiftScheduleService shiftScheduleService;
     private final ShiftScheduleRepository shiftScheduleRepository;
 
+    @Transactional
     public AppointmentResponse createAppointment(String token, AppointmentRequest appointmentRequest) {
         //判断还能不能挂号
         Optional<User> userOptional = userRepository.findByPhoneNumber(token);
