@@ -4,7 +4,7 @@ CREATE TABLE t_doctor (
                         job_number VARCHAR(20) NOT NULL UNIQUE COMMENT '电话号码',
                         title VARCHAR(20) NOT NULL  COMMENT '医生职称',
                         intro VARCHAR(20) NOT NULL  COMMENT '医生简介',
-                        section_id VARCHAR(50) COMMENT '科室id',
+                        section_id VARCHAR(50) NOT NULL COMMENT '科室id',
                         PRIMARY KEY (uid),
                         FOREIGN KEY (section_id) REFERENCES t_section (uid) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
