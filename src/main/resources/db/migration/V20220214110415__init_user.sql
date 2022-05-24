@@ -4,7 +4,7 @@ CREATE TABLE t_user (
                         id_number VARCHAR(20) NOT NULL UNIQUE COMMENT '身份证号',
                         password CHAR(32) NOT NULL COMMENT '密码',
                         phone VARCHAR(20) NOT NULL UNIQUE COMMENT '电话号码',
-                        gender INT COMMENT '性别:0-女，1-男',
-                        address VARCHAR(50) COMMENT '家庭住址',
+                        gender INT NOT NULL COMMENT '性别:0-女，1-男',
+                        address VARCHAR(50) NOT NULL COMMENT '家庭住址',
                         PRIMARY KEY (uid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
