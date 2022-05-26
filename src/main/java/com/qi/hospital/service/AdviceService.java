@@ -45,14 +45,16 @@ public class AdviceService {
                 .build();
     }
 
-    // 根据反馈日期倒叙查所有意见
+    //根据反馈日期倒序查所有意见
     public List<AdviceResponse> getAllAdvices() {
         List<Advice> allByOrderBOrderByCreateDateTimeDesc = adviceRepository.findAllByOrderByCreateDateTimeDesc();
 
-        return allByOrderBOrderByCreateDateTimeDesc.stream().map(advice -> AdviceResponse.builder()
-                .advice(advice.getAdvice())
-                .createTime(advice.getCreateDateTime())
-                .userResponse(userMapper.toResponse(userRepository.findById(advice.getUserId()).get()))
-                .build()).collect(Collectors.toList());
+        return allByOrderBOrderByCreateDateTimeDesc.stream()
+                .map(advice -> AdviceResponse.builder()
+                                .advice(advice.getAdvice())
+                                .createTime(advice.getCreateDateTime())
+                                .userResponse(userMapper.toResponse(userRepository.findById(advice.getUserId()).get()))
+                                .build())
+                .collect(Collectors.toList());
     }
 }
